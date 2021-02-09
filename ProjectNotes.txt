@@ -1,0 +1,12 @@
+CSCI E-94 Homework Assignment #1
+Nicholas Owen Weber
+noweber@gmail.com / niw206@g.harvard.edu
+
+Setup Notes for Instructors:
+- The solution is contained within a directory named 'TicTacToe'.
+- This directory was created by Visual Studio and its default structure has been preserved.
+- Within the 'TicTacToe' directory, please find the solution file 'TicTacToe.sln'.
+- When opening this solution file with Visual Studio 2019, all associated projects from the directory should load.
+
+
+
