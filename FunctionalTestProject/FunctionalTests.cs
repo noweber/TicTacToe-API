@@ -58,10 +58,13 @@ namespace FunctionalTestProject
             Assert.IsNotNull(results);
 
             // Assert the gameboard has not changed in the response since the game was over (there is a winner):
-            Assert.AreEqual(results.GameBoard, GameBoard);
+            for (int i = 0; i < GameBoard.Length; i++)
+            {
+                Assert.AreEqual(GameBoard[i], results.GameBoard[i]);
+            }
 
             // Assert the symbol of the winning player is correct:
-            Assert.AreEqual(results.Winner, X);
+            Assert.AreEqual(X, results.Winner);
         }
 
         /// <summary>
@@ -87,17 +90,20 @@ namespace FunctionalTestProject
             Assert.IsNotNull(results);
 
             // Assert the gameboard has not changed in the response since the game was over (there is a winner):
-            Assert.AreEqual(results.GameBoard, GameBoard);
+            for(int i = 0; i < GameBoard.Length; i++)
+            {
+                Assert.AreEqual(GameBoard[i], results.GameBoard[i]);
+            }
 
             // Assert the symbol of the winning player is correct:
-            Assert.AreEqual(results.Winner, O);
+            Assert.AreEqual(O, results.Winner);
         }
 
         /// <summary>
         /// TODO
         /// </summary>
         [TestMethod]
-        public void TestPostExecuteMoveWhereThereIsNoWinner()
+        public void TestPostExecuteMoveWhereWinnerIsInconclusive()
         {
             // Arrange 
             string[] GameBoard = new string[]
@@ -116,10 +122,45 @@ namespace FunctionalTestProject
             Assert.IsNotNull(results);
 
             // Assert the gameboard has not changed in the response since the game was over (there is a winner):
-            Assert.AreEqual(results.GameBoard, GameBoard);
+            for (int i = 0; i < GameBoard.Length; i++)
+            {
+                Assert.AreEqual(results.GameBoard[i], GameBoard[i]);
+            }
 
             // Assert the symbol of the winning player is correct:
-            Assert.AreEqual(results.Winner, O);
+            Assert.AreEqual("inconclusive", results.Winner);
+        }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        [TestMethod]
+        public void TestPostExecuteMoveWhereTheGameIsATie()
+        {
+            // Arrange 
+            string[] GameBoard = new string[]
+            {
+                X, O, X,
+                O, X, O,
+                O, X, O
+            };
+            RestClientSdkLibraryClient client = this.GetRestSdkClient();
+            ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(X, O, GameBoard, 1);
+
+            // Act
+            ExecuteMoveResponse results = (ExecuteMoveResponse)client.Post(moveRequest);
+
+            // Assert the response is not null (since this object will be used in subsequent assertions):
+            Assert.IsNotNull(results);
+
+            // Assert the gameboard has not changed in the response since the game was over (there is a winner):
+            for (int i = 0; i < GameBoard.Length; i++)
+            {
+                Assert.AreEqual(results.GameBoard[i], GameBoard[i]);
+            }
+
+            // Assert the symbol of the winning player is correct:
+            Assert.AreEqual("tie", results.Winner);
         }
 
         /// <summary>
