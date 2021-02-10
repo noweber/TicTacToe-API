@@ -9,7 +9,7 @@ using TicTacToe.DataTransferObjects;
 namespace TicTacToe.Controllers
 {
     /// <summary>
-    /// A REST controller to provide an interface for executing moves within the Tic Tac Toe game.
+    /// An interface for executing moves within the Tic Tac Toe game given some current state of a game (provided in a request).
     /// </summary>
     [Route("[controller]")]
     [ApiController]
