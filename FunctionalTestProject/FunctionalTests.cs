@@ -65,6 +65,12 @@ namespace FunctionalTestProject
 
             // Assert the symbol of the winning player is correct:
             Assert.AreEqual(X, results.Winner);
+
+            // Assert the win positions in the respone are correct:
+            Assert.AreEqual(3, results.WinPositions.Count);
+            Assert.AreEqual(0, results.WinPositions[0]);
+            Assert.AreEqual(1, results.WinPositions[1]);
+            Assert.AreEqual(2, results.WinPositions[2]);
         }
 
         /// <summary>
@@ -97,6 +103,12 @@ namespace FunctionalTestProject
 
             // Assert the symbol of the winning player is correct:
             Assert.AreEqual(O, results.Winner);
+
+            // Assert the win positions in the respone are correct:
+            Assert.AreEqual(3, results.WinPositions.Count);
+            Assert.AreEqual(2, results.WinPositions[0]);
+            Assert.AreEqual(4, results.WinPositions[1]);
+            Assert.AreEqual(6, results.WinPositions[2]);
         }
 
         /// <summary>
@@ -129,6 +141,9 @@ namespace FunctionalTestProject
 
             // Assert the symbol of the winning player is correct:
             Assert.AreEqual("inconclusive", results.Winner);
+
+            // Assert the win positions in the respone are correct:
+            Assert.IsNull(results.WinPositions);
         }
 
         /// <summary>
@@ -161,6 +176,9 @@ namespace FunctionalTestProject
 
             // Assert the symbol of the winning player is correct:
             Assert.AreEqual("tie", results.Winner);
+
+            // Assert the win positions in the respone are correct:
+            Assert.AreEqual(0, results.WinPositions.Count);
         }
 
         /// <summary>

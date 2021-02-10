@@ -79,14 +79,15 @@ namespace TicTacToe.Controllers
                 return BadRequest("The game board is invalid because the Azure player is not the next player to move and therefore cannot execute a valid move from the current board state.");
             }
 
+            Tuple<string, int[]> winner = GetWinner(moveRequest.gameBoard);
             return new ObjectResult(new ExecuteMoveResponse()
             {
                 move = -1,
                 azurePlayerSymbol = moveRequest.azurePlayerSymbol,
                 humanPlayerSymbol = moveRequest.humanPlayerSymbol,
                 gameBoard = moveRequest.gameBoard,
-                winner = GetWinner(moveRequest.gameBoard),
-                winPositions = null
+                winner = winner.Item1,
+                winPositions = winner.Item2
             });
         }
 
@@ -127,12 +128,17 @@ namespace TicTacToe.Controllers
         }
 
         /// <summary>
-        /// TODO
+        /// Checks both diagonals, all columns, and all rows to determine if any contain all of one player's symbol.
+        /// If so, that player is declared the winner.
         /// </summary>
         /// <param name="board">TODO</param>
         /// <param name="tieBreakerSymbol">TODO</param>
-        /// <returns>Returns X if X player is the winner, O if the O player has won the game, or the empty string if there is no winner, yet.</returns>
-        private static string GetWinner(string[] board)
+        /// <returns>
+        /// Returns a 2-tuple where
+        /// the the first item is a string corresponding the winning player (X, O, tie, or inconclusive) and
+        /// the second item contains the indices corresponding to the winning positions found on the game board for said player.
+        /// In the event of a tie or inconclusive state, the second part of the 2-tuple will be returned as null.</returns>
+        private static Tuple<string, int[]> GetWinner(string[] board)
         {
             // The number of columns within a tic tac toe board (this is used in calculations below):
             const int NumberOfColumns = 3;
@@ -179,13 +185,21 @@ namespace TicTacToe.Controllers
 
                 // Check if one of the players has won by a diagonal condition:
                 // If a diagonal's sum is 3 or -3, then it is a win condition for X or O respectively.
-                if (down_right_diagonal_sum == NumberOfColumns || down_left_diagonal_sum == NumberOfColumns)
+                if (down_right_diagonal_sum == NumberOfColumns)
                 {
-                    return "X";
+                    return new Tuple<string, int[]>("X", new int[] { 0, 4, 8 });
                 }
-                if (down_right_diagonal_sum == -NumberOfColumns || down_left_diagonal_sum == -NumberOfColumns)
+                if (down_left_diagonal_sum == NumberOfColumns)
                 {
-                    return "O";
+                    return new Tuple<string, int[]>("X", new int[] { 2, 4, 6 });
+                }
+                if (down_right_diagonal_sum == -NumberOfColumns)
+                {
+                    return new Tuple<string, int[]>("O", new int[] { 0, 4, 8 });
+                }
+                if (down_left_diagonal_sum == -NumberOfColumns)
+                {
+                    return new Tuple<string, int[]>("O", new int[] { 2, 4, 6 });
                 }
 
                 // These are the sums of the colums and rows where X is +1 and O is -1:
@@ -219,20 +233,28 @@ namespace TicTacToe.Controllers
 
                 // Check if one of the players has won by a row or column condition:
                 // If a row or column's sum is 3 or -3, then it is a win condition for X or O respectively.
-                if (row_sum == NumberOfColumns || column_sum == NumberOfColumns)
+                if (row_sum == NumberOfColumns)
                 {
-                    return "X";
+                    return new Tuple<string, int[]>("X", new int[] { i * NumberOfColumns, i * NumberOfColumns + 1, i * NumberOfColumns + 2 });
                 }
-                if (row_sum == -NumberOfColumns || column_sum == -NumberOfColumns)
+                if (column_sum == NumberOfColumns)
                 {
-                    return "O";
+                    return new Tuple<string, int[]>("X", new int[] { i, i + NumberOfColumns, i + NumberOfColumns * 2 });
+                }
+                if (row_sum == -NumberOfColumns)
+                {
+                    return new Tuple<string, int[]>("O", new int[] { i * NumberOfColumns, i * NumberOfColumns + 1, i * NumberOfColumns + 2 });
+                }
+                if (column_sum == -NumberOfColumns)
+                {
+                    return new Tuple<string, int[]>("O", new int[] { i, i + NumberOfColumns, i + NumberOfColumns * 2 });
                 }
             }
 
             // TODO: Check if there are any valid moves and, if not, return "tie":
 
             // Return the "inconclusive" string in case no winner is present.
-            return "inconclusive";
+            return new Tuple<string, int[]>("inconclusive", null); ;
         }
     }
 }
