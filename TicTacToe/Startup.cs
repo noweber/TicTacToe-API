@@ -26,6 +26,7 @@ namespace TicTacToe
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,6 +38,17 @@ namespace TicTacToe
             }
 
             app.UseHttpsRedirection();
+
+            // Add middleware to include Swagger and serve:
+            app.UseSwagger(c =>
+            {
+                c.SerializeAsV2 = true;
+            });
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "CSCI E-94: Assignment 1 - Tic Tac Toe REST API");
+                c.RoutePrefix = string.Empty;
+            });
 
             app.UseRouting();
 

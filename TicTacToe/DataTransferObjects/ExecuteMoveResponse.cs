@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace TicTacToe.DataTransferObjects
 {
@@ -13,11 +10,15 @@ namespace TicTacToe.DataTransferObjects
         /// <summary>
         /// Indicates the gameboard status whether there is a winner (the winning player's symbol), a tie, or whether it is inconclusive and the game can continue.
         /// </summary>
+        [StringLength(1)]
+        [RegularExpression("X|O")]
         public string winner { get; set; }
 
         /// <summary>
         /// An array that lists the zero-based position index values of the win or null if no winner is present in the gameBoard array.
         /// </summary>
+        [MinLength(3)]
+        [MaxLength(3)]
         public int[] winPositions { get; set; }
     }
 }
