@@ -39,7 +39,7 @@ namespace FunctionalTestProject
         /// TODO
         /// </summary>
         [TestMethod]
-        public void TestPlayerXIsWinner()
+        public void TestPostExecuteMoveWherePlayerXIsWinner()
         {
             // Arrange 
             string[] GameBoard = new string[]
@@ -68,7 +68,7 @@ namespace FunctionalTestProject
         /// TODO
         /// </summary>
         [TestMethod]
-        public void TestPlayerOIsWinner()
+        public void TestPostExecuteMoveWherePlayerOIsWinner()
         {
             // Arrange 
             string[] GameBoard = new string[]
@@ -79,6 +79,35 @@ namespace FunctionalTestProject
             };
             RestClientSdkLibraryClient client = this.GetRestSdkClient();
             ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(X, O, GameBoard, 2);
+
+            // Act
+            ExecuteMoveResponse results = (ExecuteMoveResponse)client.Post(moveRequest);
+
+            // Assert the response is not null (since this object will be used in subsequent assertions):
+            Assert.IsNotNull(results);
+
+            // Assert the gameboard has not changed in the response since the game was over (there is a winner):
+            Assert.AreEqual(results.GameBoard, GameBoard);
+
+            // Assert the symbol of the winning player is correct:
+            Assert.AreEqual(results.Winner, O);
+        }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        [TestMethod]
+        public void TestPostExecuteMoveWhereThereIsNoWinner()
+        {
+            // Arrange 
+            string[] GameBoard = new string[]
+            {
+                X, X, _,
+                _, O, _,
+                O, _, _
+            };
+            RestClientSdkLibraryClient client = this.GetRestSdkClient();
+            ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(X, O, GameBoard, 4);
 
             // Act
             ExecuteMoveResponse results = (ExecuteMoveResponse)client.Post(moveRequest);
