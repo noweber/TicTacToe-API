@@ -9,10 +9,11 @@ namespace TicTacToe.DataTransferObjects
     {
         /// <summary>
         /// Indicates the position on the board the last actor to update state chooses.
+        /// This is a Nullable type because, if it were not, the value would default to 0 if it was not present in the request body.
+        /// The move field is not required if and only if the game board is empty (contains only ? symbols)
         /// </summary>
-        [Required]
         [Range(0, 8)]
-        public int move { get; set; }
+        public System.Nullable<int> move { get; set; }
 
         /// <summary>
         /// The letter X or the letter O indicating the symbol used by Azure.

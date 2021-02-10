@@ -36,6 +36,7 @@ namespace TicTacToe.Controllers
             // This also counts the number of Xs and Os present in the game board for further checks.
             int countOfXMoves = 0;
             int countOfOMoves = 0;
+            int countOfQuestionMarks = 0;
             for (int i = 0; i < moveRequest.gameBoard.Length; i++)
             {
                 if (string.Equals(moveRequest.gameBoard[i], "X"))
@@ -46,7 +47,11 @@ namespace TicTacToe.Controllers
                 {
                     countOfOMoves += 1;
                 }
-                else if (!string.Equals(moveRequest.gameBoard[i], "?"))
+                else if (string.Equals(moveRequest.gameBoard[i], "?"))
+                {
+                    countOfQuestionMarks += 1;
+                }
+                else
                 {
                     return BadRequest("The game board contains an invalid character. Only X, O, and ? are permissable.");
                 }
@@ -59,8 +64,14 @@ namespace TicTacToe.Controllers
                 return BadRequest("The game board contains an illegal move. There must be an equal number of X and O moves within the board +/- 1 for the most recent move.");
             }
 
+            // Check that if a move was not present, then the board must contain only ? symbols:
+            if (!moveRequest.move.HasValue && (countOfXMoves > 0 || countOfOMoves > 0 || countOfQuestionMarks != 9))
+            {
+                return BadRequest("The move field does not contain a value, but the board is not empty.");
+            }
+
             // Check that the location of the move on the gameboard is equal to the human's symbol:
-            if (!string.Equals(moveRequest.humanPlayerSymbol, moveRequest.gameBoard[moveRequest.move]))
+            if (moveRequest.move.HasValue && !string.Equals(moveRequest.humanPlayerSymbol, moveRequest.gameBoard[moveRequest.move.Value]))
             {
                 return BadRequest("The move does not match the game board state. The symbol on the game board at the move's index must match the human player's symbol.");
             }
