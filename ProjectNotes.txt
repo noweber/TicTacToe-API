@@ -10,3 +10,118 @@ Setup Notes for Instructors:
 
 
 
+
+
+
+Requirements Traceability:
+
+0.	The REST interface that implements the heuristic and game board evaluation shall
+a.	Be called executemove
+b.	Be implemented as an HTTP POST verb
+i.	All other HTTP Verbs must not be accessible from the client
+c.	Expect the following JSON object as its inbound payload 
+i.	{
+  "move": 1,
+  "azurePlayerSymbol": "X",
+  "humanPlayerSymbol": "O",
+  "gameBoard":["X","O","?","?","?","?","?","?","?"] 
+}
+d.	move property 
+i.	Indicates the position the human chooses. In the above example, the human chooses position 1 on the game board. 
+e.	azurePlayerSymbol property
+i.	Is either the letter X or the letter O indicating the symbol used by Azure. 
+ii.	Must be the opposite of humanPlayerSymbol
+f.	humanPlayerSymbol property
+i.	Is either the letter X or the letter O indicating the symbol used by the human. 
+ii.	Must be the opposite of azurePlayerSymbol
+g.	gameboard property
+i.	? = A space on the game board
+ii.	X = Player letter X has a piece on that game board location
+iii.	O = Player letter O has a piece on that game board location
+h.	Yes, it’s possible to cheat here and swap symbols in the middle of the gameplay.
+i.	If the payload does not meet the schema defined in the REST interface shall return the HTTP Status Bad Request (400)
+j.	If the gameBoard array is filled with all "?" then Azure goes first.
+
+ 
+
+
+1.	Return the following JSON object as its output result from the executemove interface
+a.	{
+    "move": 7,
+    "azurePlayerSymbol": "X",
+    "humanPlayerSymbol": "O",
+    "winner": "X",
+    "winPositions": [
+        1,
+        4,
+        7
+    ],
+"gameBoard":["O","X","O","?","X","O","?","X","?"]
+}
+b.	move property 
+i.	Indicates the position the Azure App Service chooses. In the above example, the Azure App Service choose position 7 on the game board. 
+ii.	If a tie or winner occurred because of the game state provided before Azure making a move the move property shall be set to null
+1.	If a winner is not present, then the move property shall contain Azure applied move, and the winner property shall contain the resulting state after the Azure move is applied.
+c.	azurePlayerSymbol property
+i.	Shall be the same value the client sent
+d.	humanPlayerSymbol property
+i.	Shall be the same value the client sent
+ 
+
+ii.	winner property
+1.	Indicates the gameboard status. There can be a winner, a tie, or no winner or tie yet and the game can continue
+a.	inconclusive
+i.	Indicates there are still open places and there is no winner
+b.	tie
+i.	Indicates all positions are filled and there is no winner
+c.	X
+i.	Indicates player X is the winner
+d.	O
+i.	Indicates player O is the winner
+iii.	winPositions property
+1.	An array that lists the zero-based position index values of the win or null if no winner is present in the gameBoard array
+iv.	gameBoard property
+1.	An array containing all the positions on the board and the mark(s) indicating the positions played including the mark azure made if Azure made a move
+a.	? = An empty space on the game board
+b.	Letter X = Player X has a piece on that game board location
+c.	Letter O = Player O has a piece on that game board location
+
+ 
+
+
+2.	Add swagger documentation to your REST interface
+a.	Ensure that the
+i.	executemove interface has a description defining what its purpose is
+ii.	The input payload structure is documented
+iii.	The result payload structure is documented
+
+3.	Generate the client SDK for your REST interface and include it as part of your solution
+
+4.	Create an MS Tests to validate the operation of the executemove REST interface utilizing the client SDK you generated in step 3
+a.	Verify the detection of a:
+i.	A player X winner
+ii.	A player O winner
+iii.	Tie
+iv.	Inconclusive state, no winner yet
+
+b.	Verify the proper azurePlayerSymbol and humanPlayerSymbol have opposite values meaning
+i.	If azurePlayerSymbol has an X, then humanPlayerSymbol must have an O
+ii.	If azurePlayerSymbol has an O, then humanPlayerSymbol must have an X
+c.	Verify proper handling of invalid data
+i.	For example, a character other than the letter X, the letter O or the ? mark symbol for the game board property positions: 0-8
+ii.	An invalid game board such as
+1.	Having a game board with three X’s and only one O
+2.	Not having precisely 9 elements in the gameboard array
+3.	At least one other scenario that represents an invalid game board you think of
+    The following other scenarios for an invalid game board were tested:
+        - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenPlayerMoveIsNotTheirSymbol()
+            ~ This tests the scenario where the request sent to ExecuteMove claims the player made a move to a certain cell, but the symbol at that cell is actually the other players. i.e., the player symbol is X and the request says they made a move at '3', but the symbol at '3' on the game board is "O".
+        - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenPlayerMoveIsNotPresentInGameBoard()
+            ~ This tests the scenario where the request body contains a move made by the player, but the game board sent in the request still contains a "?" at that spot.
+        - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenPlayerMoveIsNotPresentInRequestButGameBoardIsNotEmpty()
+            ~ This tests the scenario where the game board is not empty, but the player did not send their next move in the move field.
+
+iii.	Note: An empty gameboard, which is a gameboard filled with all ? characters are valid. This means Azure shall move first
+
+5.	Create an Azure App Service and deploy your REST interface to it
+a.	Be sure to provide the URL to your REST interface endpoint in your Project Notes.TXT file
