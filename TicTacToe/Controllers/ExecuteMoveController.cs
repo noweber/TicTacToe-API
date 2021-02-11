@@ -21,6 +21,7 @@ namespace TicTacToe.Controllers
         /// <summary>
         /// Executes the Tic Tac Toe move provided in the request body and determines the next move by Azure AI if the game is not over.
         /// </summary>
+        /// <param name="moveRequest">The ExecuteMoveRequest representing the last move made within the game. Azure will act upon this move, if valid, and return the result.</param>
         /// <returns>Returns a response containing the Azure AI's next move if the game is not over else the winner and positions associated with their win.</returns>
         [HttpPost]
         [ProducesResponseType(typeof(ExecuteMoveResponse), StatusCodes.Status200OK)]

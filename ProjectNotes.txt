@@ -127,10 +127,18 @@ c.	Letter O = Player O has a piece on that game board location
 
 
 2.	Add swagger documentation to your REST interface
-a.	Ensure that the
-i.	executemove interface has a description defining what its purpose is
-ii.	The input payload structure is documented
-iii.	The result payload structure is documented
+    ~ Swagger documentation is included as can be seen within Startup.cs.
+    ~ Additionally, please visit the deployed instance of this app to see the documentation live: https://csci-e94-assignment-1-nicholas-weber.azurewebsites.net/index.html
+    a.	Ensure that the
+        i.	executemove interface has a description defining what its purpose is
+            ~ POST /ExecuteMove is documented within the Swagger documentation.
+            ~ I followed the lecture instructions to produce the XML file and generate documentation from my XML <summary> comments.
+        ii.	The input payload structure is documented
+            ~ ExecuteMoveRequest is documented within the Swagger documentation.
+            ~ I followed the lecture instructions to produce the XML file and generate documentation from my XML <summary> comments.
+        iii.	The result payload structure is documented
+             ~ ExecuteMoveResponse is documented within the Swagger documentation.
+            ~ I followed the lecture instructions to produce the XML file and generate documentation from my XML <summary> comments.
 
 3.	Generate the client SDK for your REST interface and include it as part of your solution
 

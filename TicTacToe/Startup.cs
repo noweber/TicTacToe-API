@@ -6,9 +6,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -35,6 +37,13 @@ namespace TicTacToe
                         {
                             return apiDesc.TryGetMethodInfo(out MethodInfo methodInfo) ? methodInfo.Name : null;
                         });
+
+                    c.SwaggerDoc("v1", new OpenApiInfo{ Title = "CSCI E-94 - Assignment 1 - Tic Tac Toe - Nicholas Weber", Version = "v1" });
+
+                    // Set the comments path for the Swagger JSON and UI.
+                        var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                    c.IncludeXmlComments(xmlPath);
                 });
         }
 
@@ -55,7 +64,7 @@ namespace TicTacToe
             });
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "CSCI E-94: Assignment 1 - Tic Tac Toe REST API");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "CSCI E-94: Assignment 1 - Tic Tac Toe REST API - Nicholas Weber");
                 c.RoutePrefix = string.Empty;
             });
 
