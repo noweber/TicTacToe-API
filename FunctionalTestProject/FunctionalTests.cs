@@ -60,6 +60,10 @@ namespace FunctionalTestProject
             // Assert the response is not null (since this object will be used in subsequent assertions):
             Assert.IsNotNull(results);
 
+            // Assert the player symbols have not changed between the request and the response:
+            Assert.AreEqual(moveRequest.AzurePlayerSymbol, results.AzurePlayerSymbol);
+            Assert.AreEqual(moveRequest.HumanPlayerSymbol, results.HumanPlayerSymbol);
+
             // Assert the gameboard has not changed in the response since the game was over (there is a winner):
             for (int i = 0; i < GameBoard.Length; i++)
             {
@@ -74,6 +78,9 @@ namespace FunctionalTestProject
             Assert.AreEqual(0, results.WinPositions[0]);
             Assert.AreEqual(1, results.WinPositions[1]);
             Assert.AreEqual(2, results.WinPositions[2]);
+
+            // Assert the move field is null:
+            Assert.IsNull(results.Move);
         }
 
         #endregion
@@ -120,6 +127,9 @@ namespace FunctionalTestProject
             Assert.AreEqual(2, results.WinPositions[0]);
             Assert.AreEqual(4, results.WinPositions[1]);
             Assert.AreEqual(6, results.WinPositions[2]);
+
+            // Assert the move field is null:
+            Assert.IsNull(results.Move);
         }
 
         #endregion
@@ -254,6 +264,9 @@ namespace FunctionalTestProject
 
             // Assert the win positions in the respone are correct:
             Assert.IsNull(results.WinPositions);
+
+            // Assert the move field is null:
+            Assert.IsNull(results.Move);
         }
 
         /// <summary>

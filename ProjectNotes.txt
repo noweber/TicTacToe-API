@@ -2,6 +2,7 @@ CSCI E-94 Homework Assignment #1
 Nicholas Owen Weber
 noweber@gmail.com / niw206@g.harvard.edu
 
+
 Notes for Instructors:
 - The solution is contained within a directory named 'TicTacToe'.
 - This directory was created by Visual Studio and its default structure has been preserved.
@@ -12,11 +13,10 @@ Notes for Instructors:
     - If you want to use localhost, open 2 instances of Visual Studio 2019, run the web app in one, and run the functional tests from the other.
 
 
-
-
-
 Requirements Traceability:
-Here I will map functional tests, functionality, and descriptions to the requirements from the assignment for context as to where and how they are fulfilled.
+    - Here I will map functional tests, functionality, and descriptions to the requirements from the assignment for context as to where and how they are fulfilled.
+    - Please not that many functional tests contain redundant assertionts for completeness of the test, so I have excluded some of these for brevity.
+    - The functional tests all follow the arrange, act, and assert structure to ensure the requests and responses are valid.
 
 0.	The REST interface that implements the heuristic and game board evaluation shall
     a.	Be called executemove
@@ -79,52 +79,77 @@ Here I will map functional tests, functionality, and descriptions to the require
         ~ This functional test demonstrate this requirement is fulfilled:
             - FunctionalTests::TestPostExecuteMoveAzureMakesMoveWhenBoaardIsEmpty()
 
- 
-
-
 1.	Return the following JSON object as its output result from the executemove interface
-a.	{
-    "move": 7,
-    "azurePlayerSymbol": "X",
-    "humanPlayerSymbol": "O",
-    "winner": "X",
-    "winPositions": [
-        1,
-        4,
-        7
-    ],
-"gameBoard":["O","X","O","?","X","O","?","X","?"]
-}
-b.	move property 
-i.	Indicates the position the Azure App Service chooses. In the above example, the Azure App Service choose position 7 on the game board. 
-ii.	If a tie or winner occurred because of the game state provided before Azure making a move the move property shall be set to null
-1.	If a winner is not present, then the move property shall contain Azure applied move, and the winner property shall contain the resulting state after the Azure move is applied.
-c.	azurePlayerSymbol property
-i.	Shall be the same value the client sent
-d.	humanPlayerSymbol property
-i.	Shall be the same value the client sent
- 
-
-ii.	winner property
-1.	Indicates the gameboard status. There can be a winner, a tie, or no winner or tie yet and the game can continue
-a.	inconclusive
-i.	Indicates there are still open places and there is no winner
-b.	tie
-i.	Indicates all positions are filled and there is no winner
-c.	X
-i.	Indicates player X is the winner
-d.	O
-i.	Indicates player O is the winner
-iii.	winPositions property
-1.	An array that lists the zero-based position index values of the win or null if no winner is present in the gameBoard array
-iv.	gameBoard property
-1.	An array containing all the positions on the board and the mark(s) indicating the positions played including the mark azure made if Azure made a move
-a.	? = An empty space on the game board
-b.	Letter X = Player X has a piece on that game board location
-c.	Letter O = Player O has a piece on that game board location
-
- 
-
+    a.	{
+        "move": 7,
+        "azurePlayerSymbol": "X",
+        "humanPlayerSymbol": "O",
+        "winner": "X",
+        "winPositions": [
+            1,
+            4,
+            7
+        ],
+        "gameBoard":["O","X","O","?","X","O","?","X","?"]
+    }
+        - This model is defined within the class "ExecuteMoveResponse.cs" under the 'DataTransferObjects' directory of the web app project.
+        - This model is used within all functional tests.
+    b.	move property 
+        i.	Indicates the position the Azure App Service chooses. In the above example, the Azure App Service choose position 7 on the game board.
+            - This field is included in the "ExecuteMoveResponse.cs" model.
+            - This model is used within all functional tests.
+        ii.	If a tie or winner occurred because of the game state provided before Azure making a move the move property shall be set to null
+            ~ This is demonstrated within the following functional tests:
+                - FunctionalTests::TestPostExecuteMoveWherePlayerXIsWinner()
+                - FunctionalTests::TestPostExecuteMoveWherePlayerOIsWinner()
+                - FunctionalTests::TestPostExecuteMoveWhereTheGameIsATie()
+            1.	If a winner is not present, then the move property shall contain Azure applied move, and the winner property shall contain the resulting state after the Azure move is applied.
+            ~ This is demonstrated within the following functional test:
+                - FunctionalTests::TestPostExecuteMoveWhereWinnerIsInconclusive()
+                
+    c.	azurePlayerSymbol property
+            i.	Shall be the same value the client sent
+                ~ There is an assertion to ensure this does not change between the request/response in the following functional tests:
+                    - FunctionalTests::TestPostExecuteMoveWherePlayerXIsWinner()
+                    - FunctionalTests::TestPostExecuteMoveWherePlayerOIsWinner()
+                    - FunctionalTests::TestPostExecuteMoveWhereWinnerIsInconclusive()
+    d.	humanPlayerSymbol property
+        i.	Shall be the same value the client sent
+                ~ There is an assertion to ensure this does not change between the request/response in the following functional tests:
+                    - FunctionalTests::TestPostExecuteMoveWherePlayerXIsWinner()
+                    - FunctionalTests::TestPostExecuteMoveWherePlayerOIsWinner()
+                    - FunctionalTests::TestPostExecuteMoveWhereWinnerIsInconclusive()
+    ii.	winner property
+        1.	Indicates the gameboard status. There can be a winner, a tie, or no winner or tie yet and the game can continue
+            - This field is included in the "ExecuteMoveResponse.cs" model.
+            - This model is used within all functional tests.
+        a.	inconclusive
+            ~ This is demonstrated within the following functional test:
+                - FunctionalTests::TestPostExecuteMoveWhereWinnerIsInconclusive()
+            i.	Indicates there are still open places and there is no winner
+        b.	tie
+            ~ This is demonstrated within the following functional test:
+                - FunctionalTests::TestPostExecuteMoveWhereTheGameIsATie()
+            i.	Indicates all positions are filled and there is no winner
+        c.	X
+            ~ This is demonstrated within the following functional test:
+                - FunctionalTests::TestPostExecuteMoveWherePlayerXIsWinner()
+            i.	Indicates player X is the winner
+        d.	O
+            ~ This is demonstrated within the following functional test:
+                - FunctionalTests::TestPostExecuteMoveWherePlayerOIsWinner()
+            i.	Indicates player O is the winner
+    iii.	winPositions property
+        - This field is included in the "ExecuteMoveResponse.cs" model.
+        - This model is used within all functional tests.
+        1.	An array that lists the zero-based position index values of the win or null if no winner is present in the gameBoard array
+    iv.	gameBoard property
+        - This field is included in the "ExecuteMoveResponse.cs" model.
+        - This model is used within all functional tests.
+        1.	An array containing all the positions on the board and the mark(s) indicating the positions played including the mark azure made if Azure made a move
+            a.	? = An empty space on the game board
+            b.	Letter X = Player X has a piece on that game board location
+            c.	Letter O = Player O has a piece on that game board location
 
 2.	Add swagger documentation to your REST interface
     ~ Swagger documentation is included as can be seen within Startup.cs.
@@ -141,34 +166,114 @@ c.	Letter O = Player O has a piece on that game board location
             ~ I followed the lecture instructions to produce the XML file and generate documentation from my XML <summary> comments.
 
 3.	Generate the client SDK for your REST interface and include it as part of your solution
+    ~This was generated as per lecture instructions and can be found within the "RestClientSdkLibrary" project.
 
 4.	Create an MS Tests to validate the operation of the executemove REST interface utilizing the client SDK you generated in step 3
-a.	Verify the detection of a:
-i.	A player X winner
-ii.	A player O winner
-iii.	Tie
-iv.	Inconclusive state, no winner yet
-
-b.	Verify the proper azurePlayerSymbol and humanPlayerSymbol have opposite values meaning
-i.	If azurePlayerSymbol has an X, then humanPlayerSymbol must have an O
-ii.	If azurePlayerSymbol has an O, then humanPlayerSymbol must have an X
-c.	Verify proper handling of invalid data
-i.	For example, a character other than the letter X, the letter O or the ? mark symbol for the game board property positions: 0-8
-ii.	An invalid game board such as
-1.	Having a game board with three X’s and only one O
-2.	Not having precisely 9 elements in the gameboard array
-3.	At least one other scenario that represents an invalid game board you think of
-    The following other scenarios for an invalid game board were tested:
-        - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenPlayerMoveIsNotTheirSymbol()
-            ~ This tests the scenario where the request sent to ExecuteMove claims the player made a move to a certain cell, but the symbol at that cell is actually the other players. i.e., the player symbol is X and the request says they made a move at '3', but the symbol at '3' on the game board is "O".
-        - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenPlayerMoveIsNotPresentInGameBoard()
-            ~ This tests the scenario where the request body contains a move made by the player, but the game board sent in the request still contains a "?" at that spot.
-        - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenPlayerMoveIsNotPresentInRequestButGameBoardIsNotEmpty()
-            ~ This tests the scenario where the game board is not empty, but the player did not send their next move in the move field.
-        - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenAzureHasMadeMoreMovesThanThePlayerInTheGameBoardSent()
-            ~This tests the scenario where Azure should not be the next player to move given how many moves each player has made -- human has fewer symbols on the board, but has also just moved.
-
-iii.	Note: An empty gameboard, which is a gameboard filled with all ? characters are valid. This means Azure shall move first
+    a.	Verify the detection of a:
+        i.	A player X winner
+            ~ This is demonstrated within the following functional test:
+                - FunctionalTests::TestPostExecuteMoveWherePlayerXIsWinner()
+        ii.	A player O winner
+            ~ This is demonstrated within the following functional test:
+                - FunctionalTests::TestPostExecuteMoveWherePlayerOIsWinner()
+        iii.	Tie
+            ~ This is demonstrated within the following functional test:
+                - FunctionalTests::TestPostExecuteMoveWhereTheGameIsATie()
+        iv.	Inconclusive state, no winner yet
+            ~ This is demonstrated within the following functional test:
+                - FunctionalTests::TestPostExecuteMoveWhereWinnerIsInconclusive()
+    b.	Verify the proper azurePlayerSymbol and humanPlayerSymbol have opposite values meaning
+        i.	If azurePlayerSymbol has an X, then humanPlayerSymbol must have an O
+            ~ This is demonstrated within the following functional tests:
+                - FunctionalTests::TestPostExecuteMoveBothPlayersCannotBeX()
+                - FunctionalTests::TestPostExecuteMoveBothPlayersCannotBeO()
+        ii.	If azurePlayerSymbol has an O, then humanPlayerSymbol must have an X
+            ~ This is demonstrated within the following functional tests:
+                - FunctionalTests::TestPostExecuteMoveBothPlayersCannotBeX()
+                - FunctionalTests::TestPostExecuteMoveBothPlayersCannotBeO()
+    c.	Verify proper handling of invalid data
+        i.	For example, a character other than the letter X, the letter O or the ? mark symbol for the game board property positions: 0-8
+            ~ This is demonstrated within the following functional test:
+                - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenInvalidCharacterIsInTheGameBoard()
+        ii.	An invalid game board such as
+            1.	Having a game board with three X’s and only one O
+                ~ This is demonstrated within the following functional test:
+                    - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenTheGameBoardContainsInvalidNumberOfMovesByAPlayer()
+            2.	Not having precisely 9 elements in the gameboard array
+                ~ This is demonstrated within the following functional tests:
+                    - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenTheGameBoardContainsTooFewElements()
+                    - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenTheGameBoardContainsTooManyElements()
+            3.	At least one other scenario that represents an invalid game board you think of
+                The following other scenarios for an invalid game board were tested:
+                    - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenPlayerMoveIsNotTheirSymbol()
+                        ~ This tests the scenario where the request sent to ExecuteMove claims the player made a move to a certain cell, but the symbol at that cell is actually the other players. i.e., the player symbol is X and the request says they made a move at '3', but the symbol at '3' on the game board is "O".
+                    - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenPlayerMoveIsNotPresentInGameBoard()
+                        ~ This tests the scenario where the request body contains a move made by the player, but the game board sent in the request still contains a "?" at that spot.
+                    - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenPlayerMoveIsNotPresentInRequestButGameBoardIsNotEmpty()
+                        ~ This tests the scenario where the game board is not empty, but the player did not send their next move in the move field.
+                    - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenAzureHasMadeMoreMovesThanThePlayerInTheGameBoardSent()
+                        ~This tests the scenario where Azure should not be the next player to move given how many moves each player has made -- human has fewer symbols on the board, but has also just moved.
+        iii.	Note: An empty gameboard, which is a gameboard filled with all ? characters are valid. This means Azure shall move first
+            ~ This is demonstrated within the following functional test:
+                - FunctionalTests::TestPostExecuteMoveAzureMakesMoveWhenBoaardIsEmpty()
 
 5.	Create an Azure App Service and deploy your REST interface to it
-a.	Be sure to provide the URL to your REST interface endpoint in your Project Notes.TXT file
+    - I created a resource group, App Service Plan, and App Service to host this REST API in Azure using the class account.
+    a.	Be sure to provide the URL to your REST interface endpoint in your Project Notes.TXT file
+        - The URL to the deployed REST interface endpoint is: https://csci-e94-assignment-1-nicholas-weber.azurewebsites.net
+
+Extra Credit: 
+You may implement both extra credit items or a single extra credit item, but any extra credit item must be fully implemented to receive any credit.
+    1.	Build a client-side application that allows a user to play the game of Tic Tac Toe using your REST interface hosted in an Azure App Service.  
+        The details of the user interface are up to you, so have fun with it. Just be sure it’is intuitive. Also be sure the TA has everything they need to build and run your app. 
+        The TA must not be required to install additional software beyond what is configurable from the Visual Studio Installer or automatically pulled down by building and running your app. 
+        If additional items are required to be installed using the Visual Studio Installer you must specify them in your project notes.txt file
+            a.	You may build:
+                i.	A console app
+                ii.	A UWP app
+                iii.	A WPF app
+                iv.	A JavaScript app
+                v.	A Blazor app
+
+    2.	Create the functionality that allows Azure to play against itself and implement the play against itself via MS Test
+        a.	Add a new rest interface called calculatemove that shall return the move based on the game board presented and update the board with the move made.
+            i.	It shall accept the following input
+                1.	{
+                        "playerSymbol": "X",
+                        "gameBoard":["O","X","O","?","X","O","?","?","?"]
+                    }
+            ii.	It shall return the following output
+                1.	{
+                        "move": 7,
+                        "playerSymbol": "X",
+                        "winner": "X",
+                        "winPositions": [1,4,7],
+                        "gameBoard":["O","X","O","?","X","O","?","X","?"]
+                    }
+            iii.	move property 
+                1.	Indicates the position the Azure App Service calculated for the playerSymbol provided. In the above example, the Azure App Service choose position 7 on the game board. 
+                2.	The computation of the move shall include some randomness such that if the move is the first move, the move shall be different from the last first move. Use .NET random functions to attempt to be different from one game to another. Randomness does not have to be perfect meaning sometimes a new game may result in the same first move as the previous game.
+                3.	If a tie or winner occurred because of the game state provided, then the move property shall be set to null
+                    a.	If a winner is not present, then the move property shall contain the Azure computed move, and the winner property shall contain the resulting state after the move is applied.
+            iv.	playerSymbol property
+                1.	Is the same symbol value the input payload specified in the playerSymbol originally sent.
+            v.	winner property
+                1.	Indicates if there is a winner, tie, or no winner or tie yet and the game can continue
+                    a.	inconclusive
+                        i.	Indicates there are still open places and there is no winner
+                    b.	tie
+                        i.	Indicates all places are filled, and there is no winner
+                    c.	X
+                        i.	Indicates player X is the winner
+                    d.	O
+                        i.	Indicates player O is the winner
+            vi.	winPositions property
+                1.	An array that lists the position index values of the win or null if no win is present in the gameBoard array
+            vii.	gameBoard property
+                1.	An array containing all the positions on the board and the mark that is in the position including the mark azure made if Azure made a move
+                    a.	? = An empty space on the game board
+                    b.	X = Player X has a piece on that game board location
+                    c.	O = Player O has a piece on that game board location
+        b.	Create an MS Test that uses this new calculatemove rest interface to play azure against itself
+            i.	Log the results to the debug window in Visual Studio
+
