@@ -108,6 +108,10 @@ namespace FunctionalTestProject
                 Assert.AreEqual(GameBoard[i], results.GameBoard[i]);
             }
 
+            // Assert the player symbols have not changed between the request and the response:
+            Assert.AreEqual(moveRequest.AzurePlayerSymbol, results.AzurePlayerSymbol);
+            Assert.AreEqual(moveRequest.HumanPlayerSymbol, results.HumanPlayerSymbol);
+
             // Assert the symbol of the winning player is correct:
             Assert.AreEqual(O, results.Winner);
 
@@ -129,7 +133,7 @@ namespace FunctionalTestProject
             // Arrange the game board so there is no winner, but there are still moves to be made.
             string[] GameBoard = new string[]
             {
-                X, X, _,
+                X, _, _,
                 _, O, _,
                 O, _, _
             };
@@ -142,14 +146,27 @@ namespace FunctionalTestProject
             // Assert the response is not null (since this object will be used in subsequent assertions):
             Assert.IsNotNull(results);
 
-            // Assert the gameboard has not changed in the response since the game was over (there is a winner):
-            for (int i = 0; i < GameBoard.Length; i++)
-            {
-                Assert.AreEqual(results.GameBoard[i], GameBoard[i]);
-            }
+            // Assert the player symbols have not changed between the request and the response:
+            Assert.AreEqual(moveRequest.AzurePlayerSymbol, results.AzurePlayerSymbol);
+            Assert.AreEqual(moveRequest.HumanPlayerSymbol, results.HumanPlayerSymbol);
 
             // Assert the symbol of the winning player is correct:
             Assert.AreEqual("inconclusive", results.Winner);
+
+            // Assert the Azure AI made a move:
+            Assert.IsNotNull(results.Move);
+
+            // Assert the gameboard has not changed in the response since the game was over (there is a winner):
+            for (int i = 0; i < GameBoard.Length; i++)
+            {
+                if (i != results.Move)
+                {
+                    Assert.AreEqual(results.GameBoard[i], GameBoard[i]);
+                } else
+                {
+                    Assert.AreEqual(results.GameBoard[i], results.AzurePlayerSymbol);
+                }
+            }
 
             // Assert the win positions in the respone are correct:
             Assert.IsNull(results.WinPositions);
