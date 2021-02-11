@@ -16,7 +16,7 @@ namespace FunctionalTestProject
         // The URL string for local or Azure endpoints.
         // Comment/uncomment each depending on which you would like to use for testing.
         const string EndpointUrlString = "http://localhost:2932/";
-        //const string EndpointUrlString = "TODO: Azure Endpoint";
+        //const string EndpointUrlString = "https://csci-e94-assignment-1-nicholas-weber.azurewebsites.net";
 
         /// <summary>
         /// The string symbol used to represent the X player on the game board.
@@ -173,6 +173,55 @@ namespace FunctionalTestProject
         }
 
         /// <summary>
+        /// This is a functional test to assert Azure will make the first move if given an empty board.
+        /// </summary>
+        [TestMethod]
+        public void TestPostExecuteMoveAzureMakesMoveWhenBoaardIsEmpty()
+        {
+            // Arrange the empty game board
+            string[] GameBoard = new string[]
+            {
+                _, _, _,
+                _, _, _,
+                _, _, _,
+            };
+            RestClientSdkLibraryClient client = this.GetRestSdkClient();
+            ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(X, O, GameBoard);
+
+            // Act
+            ExecuteMoveResponse results = (ExecuteMoveResponse)client.Post(moveRequest);
+
+            // Assert the response is not null (since this object will be used in subsequent assertions):
+            Assert.IsNotNull(results);
+
+            // Assert the player symbols have not changed between the request and the response:
+            Assert.AreEqual(moveRequest.AzurePlayerSymbol, results.AzurePlayerSymbol);
+            Assert.AreEqual(moveRequest.HumanPlayerSymbol, results.HumanPlayerSymbol);
+
+            // Assert the symbol of the winning player is correct:
+            Assert.AreEqual("inconclusive", results.Winner);
+
+            // Assert the Azure AI made a move:
+            Assert.IsNotNull(results.Move);
+
+            // Assert the gameboard has not changed in the response since the game was over (there is a winner):
+            for (int i = 0; i < GameBoard.Length; i++)
+            {
+                if (i != results.Move)
+                {
+                    Assert.AreEqual(results.GameBoard[i], GameBoard[i]);
+                }
+                else
+                {
+                    Assert.AreEqual(results.GameBoard[i], results.AzurePlayerSymbol);
+                }
+            }
+
+            // Assert the win positions in the respone are correct:
+            Assert.IsNull(results.WinPositions);
+        }
+
+        /// <summary>
         /// This is a functional test to assert "tie" is entered as the winner in a response where the game board is full but no one has 3 in a row.
         /// </summary>
         [TestMethod]
@@ -266,10 +315,10 @@ namespace FunctionalTestProject
         #region Verify proper handling of invalid data
 
         /// <summary>
-        /// This is a functional test to assert a BadRequest is returned when both players are said to use the O symbol.
+        /// This is a functional test to assert a BadRequest is returned when the human player tries to use an invalid symbol.
         /// </summary>
         [TestMethod]
-        public void TestPostExecuteMoveReturnsBadRequestWhenPlayerSymbolIsInvalid()
+        public void TestPostExecuteMoveReturnsBadRequestWhenHumanPlayerSymbolIsInvalid()
         {
             // Arrange 
             string[] GameBoard = new string[]
@@ -291,6 +340,34 @@ namespace FunctionalTestProject
 
             // Assert the BadRequest description string is correct:
             Assert.IsTrue(response.Contains("The field humanPlayerSymbol must match the regular expression 'X|O'"));
+        }
+
+        // <summary>
+        /// This is a functional test to assert a BadRequest is returned when the Azure player is assigned an invalid symbol.
+        /// </summary>
+        [TestMethod]
+        public void TestPostExecuteMoveReturnsBadRequestWhenAzurePlayerSymbolIsInvalid()
+        {
+            // Arrange 
+            string[] GameBoard = new string[]
+            {
+                _, _, _,
+                _, _, _,
+                _, _, _
+            };
+
+            // Arrange an execute move request where a player used an invalid symbol "Y"
+            RestClientSdkLibraryClient client = this.GetRestSdkClient();
+            ExecuteMoveRequest moveRequest = new ExecuteMoveRequest("Y", X, GameBoard);
+
+            // Act
+            string response = (string)client.Post(moveRequest);
+
+            // Assert the response object is not null to prove it was a BadRequest:
+            Assert.IsNotNull(response);
+
+            // Assert the BadRequest description string is correct:
+            Assert.IsTrue(response.Contains("The field azurePlayerSymbol must match the regular expression 'X|O'"));
         }
 
         /// <summary>

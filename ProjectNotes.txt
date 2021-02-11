@@ -2,45 +2,82 @@ CSCI E-94 Homework Assignment #1
 Nicholas Owen Weber
 noweber@gmail.com / niw206@g.harvard.edu
 
-Setup Notes for Instructors:
+Notes for Instructors:
 - The solution is contained within a directory named 'TicTacToe'.
 - This directory was created by Visual Studio and its default structure has been preserved.
 - Within the 'TicTacToe' directory, please find the solution file 'TicTacToe.sln'.
 - When opening this solution file with Visual Studio 2019, all associated projects from the directory should load.
-
+- You can comment/uncomment the endpoint URL in the functional tests:
+    - If you want to point the funcitonal tests to Azure, the deployment to Azure is at: http://csci-e94-assignment-1-nicholas-weber.azurewebsites.net
+    - If you want to use localhost, open 2 instances of Visual Studio 2019, run the web app in one, and run the functional tests from the other.
 
 
 
 
 
 Requirements Traceability:
+Here I will map functional tests, functionality, and descriptions to the requirements from the assignment for context as to where and how they are fulfilled.
 
 0.	The REST interface that implements the heuristic and game board evaluation shall
-a.	Be called executemove
-b.	Be implemented as an HTTP POST verb
-i.	All other HTTP Verbs must not be accessible from the client
-c.	Expect the following JSON object as its inbound payload 
-i.	{
-  "move": 1,
-  "azurePlayerSymbol": "X",
-  "humanPlayerSymbol": "O",
-  "gameBoard":["X","O","?","?","?","?","?","?","?"] 
-}
-d.	move property 
-i.	Indicates the position the human chooses. In the above example, the human chooses position 1 on the game board. 
-e.	azurePlayerSymbol property
-i.	Is either the letter X or the letter O indicating the symbol used by Azure. 
-ii.	Must be the opposite of humanPlayerSymbol
-f.	humanPlayerSymbol property
-i.	Is either the letter X or the letter O indicating the symbol used by the human. 
-ii.	Must be the opposite of azurePlayerSymbol
-g.	gameboard property
-i.	? = A space on the game board
-ii.	X = Player letter X has a piece on that game board location
-iii.	O = Player letter O has a piece on that game board location
-h.	Yes, it’s possible to cheat here and swap symbols in the middle of the gameplay.
-i.	If the payload does not meet the schema defined in the REST interface shall return the HTTP Status Bad Request (400)
-j.	If the gameBoard array is filled with all "?" then Azure goes first.
+    a.	Be called executemove
+        - The controler is named "ExecuteMoveController" and it contains only a POST action.
+        - The routing attribute on the controller is [Route("[controller]")], so POST executemove is available (as shown in all of the functional tests) 
+    b.	Be implemented as an HTTP POST verb
+        - The "ExecuteMoveController" contains a POST action which makes POST executemove available.
+        i.	All other HTTP Verbs must not be accessible from the client
+            - The "ExecuteMoveController" only implements the POST action.
+    c.	Expect the following JSON object as its inbound payload 
+        i.	{
+                "move": 1,
+                "azurePlayerSymbol": "X",
+                "humanPlayerSymbol": "O",
+                "gameBoard":["X","O","?","?","?","?","?","?","?"] 
+            }
+            - This model is defined within the class "ExecuteMoveRequest.cs" under the 'DataTransferObjects' directory of the web app project.
+            - This model is used within all functional tests.
+    d.	move property 
+        i.	Indicates the position the human chooses. In the above example, the human chooses position 1 on the game board.
+            - This model is defined within the class "ExecuteMoveRequest.cs" under the 'DataTransferObjects' directory of the web app project.
+            - There is a valiation attribute associated with this field.
+            - The field is used in all functional tests.
+    e.	azurePlayerSymbol property
+        i.	Is either the letter X or the letter O indicating the symbol used by Azure. 
+            ~ This functional test demonstrates this requirement is fulfilled:
+                - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenAzurePlayerSymbolIsInvalid()
+        ii.	Must be the opposite of humanPlayerSymbol
+            ~ These functional tests demonstrate this requirement is fulfilled:
+                - FunctionalTests::TestPostExecuteMoveBothPlayersCannotBeO()
+                - FunctionalTests::TestPostExecuteMoveBothPlayersCannotBeO()
+    f.	humanPlayerSymbol property
+        i.	Is either the letter X or the letter O indicating the symbol used by the human.
+            ~ This functional test demonstrates this requirement is fulfilled:
+                - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenHumanPlayerSymbolIsInvalid()
+        ii.	Must be the opposite of azurePlayerSymbol
+            ~ These functional tests demonstrate this requirement is fulfilled:
+                - FunctionalTests::TestPostExecuteMoveBothPlayersCannotBeO()
+                - FunctionalTests::TestPostExecuteMoveBothPlayersCannotBeO()
+    g.	gameboard property
+        i.	? = A space on the game board
+        ii.	X = Player letter X has a piece on that game board location
+        iii.	O = Player letter O has a piece on that game board location
+            - All functional tests use these symbols to show this is implemented.
+            ~ This test shows the scenario where an invalid symbol is used and a BadRequest is returned:
+                - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenInvalidCharacterIsInTheGameBoard()
+    i.	If the payload does not meet the schema defined in the REST interface shall return the HTTP Status Bad Request (400)
+        ~ This model is defined within the class "ExecuteMoveRequest.cs" under the 'DataTransferObjects' directory of the web app project.
+        ~ I used model annotations such as [Range(0, 8)] within this class to validate the incoming request models.
+        ~ When the rules are broken, the .NET framework returns a 400.
+        ~ I looked these up after Lectures 1 & 2 and then discovered they were covered in Lecture 3 of the course.
+        ~ These functional tests demonstrate this requirement is fulfilled:
+            - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenTheGameBoardContainsTooManyElements()
+            - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenTheGameBoardContainsTooFewElements()
+            - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenInvalidCharacterIsInTheGameBoard()
+            - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenAzurePlayerSymbolIsInvalid()
+            - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenHumanPlayerSymbolIsInvalid()
+        ~ Every functional test within the suite maps to this requirement partially.
+    j.	If the gameBoard array is filled with all "?" then Azure goes first.
+        ~ This functional test demonstrate this requirement is fulfilled:
+            - FunctionalTests::TestPostExecuteMoveAzureMakesMoveWhenBoaardIsEmpty()
 
  
 
@@ -120,6 +157,8 @@ ii.	An invalid game board such as
             ~ This tests the scenario where the request body contains a move made by the player, but the game board sent in the request still contains a "?" at that spot.
         - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenPlayerMoveIsNotPresentInRequestButGameBoardIsNotEmpty()
             ~ This tests the scenario where the game board is not empty, but the player did not send their next move in the move field.
+        - FunctionalTests::TestPostExecuteMoveReturnsBadRequestWhenAzureHasMadeMoreMovesThanThePlayerInTheGameBoardSent()
+            ~This tests the scenario where Azure should not be the next player to move given how many moves each player has made -- human has fewer symbols on the board, but has also just moved.
 
 iii.	Note: An empty gameboard, which is a gameboard filled with all ? characters are valid. This means Azure shall move first
 
