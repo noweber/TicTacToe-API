@@ -323,7 +323,7 @@ namespace TicTacToe.Controllers
         /// Checks both diagonals, all columns, and all rows to determine if any contain all of one player's symbol.
         /// If so, that player is declared the winner.
         /// </summary>
-        /// <param name="board">TODO</param>
+        /// <param name="board">The current board to check whether a winner exists or not.</param>
         /// <returns>
         /// Returns a 2-tuple where
         /// the the first item is a string corresponding the winning player (X, O, tie, or inconclusive) and
