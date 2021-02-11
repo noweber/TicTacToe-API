@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.Rest;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RestClientSdkLibrary;
@@ -96,7 +97,7 @@ namespace FunctionalTestProject
             Assert.IsNotNull(results);
 
             // Assert the gameboard has not changed in the response since the game was over (there is a winner):
-            for(int i = 0; i < GameBoard.Length; i++)
+            for (int i = 0; i < GameBoard.Length; i++)
             {
                 Assert.AreEqual(GameBoard[i], results.GameBoard[i]);
             }
@@ -179,6 +180,58 @@ namespace FunctionalTestProject
 
             // Assert the win positions in the respone are correct:
             Assert.AreEqual(0, results.WinPositions.Count);
+        }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        [TestMethod]
+        public void TestPostExecuteMoveBothPlayersCannotBeX()
+        {
+            // Arrange 
+            string[] GameBoard = new string[]
+            {
+                _, X, _,
+                _, _, _,
+                _, _, _
+            };
+            RestClientSdkLibraryClient client = this.GetRestSdkClient();
+            ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(X, X, GameBoard, 1);
+
+            // Act
+            BadRequestDescriptionResponse results = (BadRequestDescriptionResponse)client.Post(moveRequest);
+
+            // Assert the response object is not null to prove it was a BadRequest:
+            Assert.IsNotNull(results);
+
+            // Assert the BadRequest description string is correct:
+            Assert.AreEqual("The Azure and Human players must use different symbols. Only X and O are permissable.", results.Description);
+        }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        [TestMethod]
+        public void TestPostExecuteMoveBothPlayersCannotBeO()
+        {
+            // Arrange 
+            string[] GameBoard = new string[]
+            {
+                _, X, _,
+                _, _, _,
+                _, _, _
+            };
+            RestClientSdkLibraryClient client = this.GetRestSdkClient();
+            ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(O, O, GameBoard, 1);
+
+            // Act
+            BadRequestDescriptionResponse results = (BadRequestDescriptionResponse)client.Post(moveRequest);
+
+            // Assert the response object is not null to prove it was a BadRequest:
+            Assert.IsNotNull(results);
+
+            // Assert the BadRequest description string is correct:
+            Assert.AreEqual("The Azure and Human players must use different symbols. Only X and O are permissable.", results.Description);
         }
 
         /// <summary>

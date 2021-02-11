@@ -18,14 +18,17 @@ namespace TicTacToe.Controllers
         /// <returns>Returns a response containing the Azure AI's next move if the game is not over else the winner and positions associated with their win.</returns>
         [HttpPost]
         [ProducesResponseType(typeof(ExecuteMoveResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BadRequestDescriptionResponse), StatusCodes.Status400BadRequest)]
         public IActionResult Post(ExecuteMoveRequest moveRequest)
         {
             // Check that the Azure and Human player symbols are different:
             // If the symbols in the request body are the same, return Bad Request.
             if (string.Equals(moveRequest.azurePlayerSymbol, moveRequest.humanPlayerSymbol))
             {
-                return BadRequest("The Azure and Human players must use different symbols. Only X and O are permissable.");
+                return BadRequest(new BadRequestDescriptionResponse()
+                {
+                    description = "The Azure and Human players must use different symbols. Only X and O are permissable."
+                });
             }
 
             // Check that the game board is valid:
