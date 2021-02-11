@@ -8,7 +8,7 @@ using System;
 namespace FunctionalTestProject
 {
     /// <summary>
-    /// TODO
+    /// This a a class of tests to verify the functionality of the Tic Tac Toe web app game.
     /// </summary>
     [TestClass]
     public class FunctionalTests
@@ -36,13 +36,15 @@ namespace FunctionalTestProject
         /// </summary>
         const string _ = "?";
 
+        #region Verify the detection of 'player X winner'
+
         /// <summary>
-        /// TODO
+        /// This is a functional test to assert the general ExecuteMove response to a victory condition when player X has won is correct.
         /// </summary>
         [TestMethod]
         public void TestPostExecuteMoveWherePlayerXIsWinner()
         {
-            // Arrange 
+            // Arrange the game board so that X wins
             string[] GameBoard = new string[]
             {
                 X, X, X,
@@ -74,13 +76,17 @@ namespace FunctionalTestProject
             Assert.AreEqual(2, results.WinPositions[2]);
         }
 
+        #endregion
+
+        #region Verify the detection of 'player O winner'
+
         /// <summary>
-        /// TODO
+        /// This is a functional test to assert the general ExecuteMove response to a victory condition when player O has won is correct.
         /// </summary>
         [TestMethod]
         public void TestPostExecuteMoveWherePlayerOIsWinner()
         {
-            // Arrange 
+            // Arrange the game board so that O wins.
             string[] GameBoard = new string[]
             {
                 X, X, O,
@@ -112,13 +118,15 @@ namespace FunctionalTestProject
             Assert.AreEqual(6, results.WinPositions[2]);
         }
 
+        #endregion
+
         /// <summary>
-        /// TODO
+        /// This is a functional test to assert "inconclusive" is entered as the winner in a response where the game board is not yet full but no one has 3 in a row.
         /// </summary>
         [TestMethod]
         public void TestPostExecuteMoveWhereWinnerIsInconclusive()
         {
-            // Arrange 
+            // Arrange the game board so there is no winner, but there are still moves to be made.
             string[] GameBoard = new string[]
             {
                 X, X, _,
@@ -148,12 +156,12 @@ namespace FunctionalTestProject
         }
 
         /// <summary>
-        /// TODO
+        /// This is a functional test to assert "tie" is entered as the winner in a response where the game board is full but no one has 3 in a row.
         /// </summary>
         [TestMethod]
         public void TestPostExecuteMoveWhereTheGameIsATie()
         {
-            // Arrange 
+            // Arrange the game board so there is no winner and no open cells for available moves.
             string[] GameBoard = new string[]
             {
                 X, O, X,
@@ -179,37 +187,39 @@ namespace FunctionalTestProject
             Assert.AreEqual("tie", results.Winner);
 
             // Assert the win positions in the respone are correct:
-            Assert.AreEqual(0, results.WinPositions.Count);
+            Assert.IsNull(results.WinPositions);
         }
 
         /// <summary>
-        /// TODO
+        /// This is a functional test to assert a BadRequest is returned when both players are said to use the X symbol.
         /// </summary>
         [TestMethod]
         public void TestPostExecuteMoveBothPlayersCannotBeX()
         {
-            // Arrange 
+            // Arrange the game board so that no moves have been made
             string[] GameBoard = new string[]
             {
-                _, X, _,
+                _, _, _,
                 _, _, _,
                 _, _, _
             };
+
+            // Arrange an execute move request where both players have the same symbol as X
             RestClientSdkLibraryClient client = this.GetRestSdkClient();
-            ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(X, X, GameBoard, 1);
+            ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(X, X, GameBoard);
 
             // Act
-            BadRequestDescriptionResponse results = (BadRequestDescriptionResponse)client.Post(moveRequest);
+            string results = (string)client.Post(moveRequest);
 
             // Assert the response object is not null to prove it was a BadRequest:
             Assert.IsNotNull(results);
 
             // Assert the BadRequest description string is correct:
-            Assert.AreEqual("The Azure and Human players must use different symbols. Only X and O are permissable.", results.Description);
+            Assert.AreEqual("The Azure and Human players must use different symbols. Only X and O are permissable.", results);
         }
 
         /// <summary>
-        /// TODO
+        /// This is a functional test to assert a BadRequest is returned when both players are said to use the O symbol.
         /// </summary>
         [TestMethod]
         public void TestPostExecuteMoveBothPlayersCannotBeO()
@@ -217,25 +227,55 @@ namespace FunctionalTestProject
             // Arrange 
             string[] GameBoard = new string[]
             {
-                _, X, _,
+                _, _, _,
                 _, _, _,
                 _, _, _
             };
+
+            // Arrange an execute move request where both players have the same symbol as O
             RestClientSdkLibraryClient client = this.GetRestSdkClient();
             ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(O, O, GameBoard, 1);
 
             // Act
-            BadRequestDescriptionResponse results = (BadRequestDescriptionResponse)client.Post(moveRequest);
+            string results = (string)client.Post(moveRequest);
 
             // Assert the response object is not null to prove it was a BadRequest:
             Assert.IsNotNull(results);
 
             // Assert the BadRequest description string is correct:
-            Assert.AreEqual("The Azure and Human players must use different symbols. Only X and O are permissable.", results.Description);
+            Assert.AreEqual("The Azure and Human players must use different symbols. Only X and O are permissable.", results);
         }
 
         /// <summary>
-        /// TODO
+        /// This is a functional test to assert a BadRequest is returned when both players are said to use the O symbol.
+        /// </summary>
+        [TestMethod]
+        public void TestPostExecuteMoveReturnsBadRequestWhenPlayerSymbolIsInvalid()
+        {
+            // Arrange 
+            string[] GameBoard = new string[]
+            {
+                _, _, _,
+                _, _, _,
+                _, _, _
+            };
+
+            // Arrange an execute move request where a player used an invalid symbol "Y"
+            RestClientSdkLibraryClient client = this.GetRestSdkClient();
+            ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(X, "Y", GameBoard);
+
+            // Act
+            string response = (string)client.Post(moveRequest);
+
+            // Assert the response object is not null to prove it was a BadRequest:
+            Assert.IsNotNull(response);
+
+            // Assert the BadRequest description string is correct:
+            Assert.IsTrue(response.Contains("The field humanPlayerSymbol must match the regular expression 'X|O'"));
+        }
+
+        /// <summary>
+        /// This is a helper function used by all of the functional tests to instnatiate the REST client object.
         /// </summary>
         /// <returns>TODO</returns>
         private RestClientSdkLibraryClient GetRestSdkClient()

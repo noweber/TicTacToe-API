@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using TicTacToe.DataTransferObjects;
 
 namespace TicTacToe.Controllers
@@ -18,17 +19,14 @@ namespace TicTacToe.Controllers
         /// <returns>Returns a response containing the Azure AI's next move if the game is not over else the winner and positions associated with their win.</returns>
         [HttpPost]
         [ProducesResponseType(typeof(ExecuteMoveResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BadRequestDescriptionResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public IActionResult Post(ExecuteMoveRequest moveRequest)
         {
             // Check that the Azure and Human player symbols are different:
             // If the symbols in the request body are the same, return Bad Request.
             if (string.Equals(moveRequest.azurePlayerSymbol, moveRequest.humanPlayerSymbol))
             {
-                return BadRequest(new BadRequestDescriptionResponse()
-                {
-                    description = "The Azure and Human players must use different symbols. Only X and O are permissable."
-                });
+                return BadRequest("The Azure and Human players must use different symbols. Only X and O are permissable.");
             }
 
             // Check that the game board is valid:
@@ -92,6 +90,29 @@ namespace TicTacToe.Controllers
                 winner = winner.Item1,
                 winPositions = winner.Item2
             });
+        }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="board">TODO</param>
+        /// <returns>TODO</returns>
+        private static List<int> AvailableMoves(string[] board)
+        {
+            const int NumberOfColumns = 3;
+            List<int> availableMoves = new List<int>();
+            for(int i = 0; i < NumberOfColumns; i++)
+            {
+                for (int j = 0; j < NumberOfColumns; j++)
+                {
+                    int boardIndex = i * NumberOfColumns + j;
+                    if (string.Equals(board[boardIndex], "?"))
+                    {
+                        availableMoves.Add(boardIndex);
+                    }
+                }
+            }
+            return availableMoves;
         }
 
         /// <summary>
@@ -254,7 +275,12 @@ namespace TicTacToe.Controllers
                 }
             }
 
-            // TODO: Check if there are any valid moves and, if not, return "tie":
+            // Check if there are any valid moves and, if not, return "tie" since no winner has been found and there are no open spaces:
+            List<int> availableMoves = AvailableMoves(board);
+            if(availableMoves.Count == 0)
+            {
+                return new Tuple<string, int[]>("tie", null); ;
+            }
 
             // Return the "inconclusive" string in case no winner is present.
             return new Tuple<string, int[]>("inconclusive", null); ;

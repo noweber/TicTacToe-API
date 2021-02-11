@@ -266,10 +266,6 @@ namespace RestClientSdkLibrary
         /// </return>
         public async Task<HttpOperationResponse<object>> PostWithHttpMessagesAsync(ExecuteMoveRequest body = default(ExecuteMoveRequest), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (body != null)
-            {
-                body.Validate();
-            }
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
             string _invocationId = null;
@@ -375,7 +371,7 @@ namespace RestClientSdkLibrary
                 _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = SafeJsonConvert.DeserializeObject<BadRequestDescriptionResponse>(_responseContent, this.DeserializationSettings);
+                    _result.Body = _responseContent;
                 }
                 catch (JsonException ex)
                 {
