@@ -11,6 +11,7 @@ Notes for Instructors:
 - You can comment/uncomment the endpoint URL in the functional tests:
     - If you want to point the funcitonal tests to Azure, the deployment to Azure is at: http://csci-e94-assignment-1-nicholas-weber.azurewebsites.net
     - If you want to use localhost, open 2 instances of Visual Studio 2019, run the web app in one, and run the functional tests from the other.
+- Please know that there are multiple projects. A web app REST API and a console client app, for example. Either project can be started for debugging, but make sure to select the right one at the top of Visual Studio.
 
 
 Requirements Traceability:
@@ -234,6 +235,12 @@ You may implement both extra credit items or a single extra credit item, but any
                 iii.	A WPF app
                 iv.	A JavaScript app
                 v.	A Blazor app
+
+        - I've implemented a console client app to play against the Minimax AI.
+        - Please select the 'ConsoleClient' project at the top of Visual Studio 2019 and select 'Start Debugging' to play.
+        - The UI is very simple: enter the cell you want to place a move at and then press enter.
+        - Please ensure you have the app running locally or are pointed to the Azure instance.
+        - Please be aware that the Azure App Service is "Free" tier, so if you play too much it will stop responding because it has limited CPU time in this tier.
 
     2.	Create the functionality that allows Azure to play against itself and implement the play against itself via MS Test
         a.	Add a new rest interface called calculatemove that shall return the move based on the game board presented and update the board with the move made.

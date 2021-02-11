@@ -248,11 +248,8 @@ namespace TicTacToe.Controllers
                 // If the result is better than any previously best known move, store it as the best so far:
                 // Note: A higher utility is arbitrarily better for the "X" player according to the utility function.
                 // Note: A lower utility is arbitrarily better for the "O" player according to the utility function.
-                if (
-                    (string.Equals("X", currentPlayer) && result.Item1 > bestMove.Item1) ||
-                    (string.Equals("O", currentPlayer) && result.Item1 < bestMove.Item1)
-
-                    )
+                if ((string.Equals("X", currentPlayer) && result.Item1 > bestMove.Item1) ||
+                    (string.Equals("O", currentPlayer) && result.Item1 < bestMove.Item1))
                 {
 
                     bestMove = new Tuple<int, int?>(result.Item1, possibleMoves[i]);
