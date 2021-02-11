@@ -59,31 +59,32 @@ namespace ConsoleClient
                                 board[response.Move.Value] = azureSymbol;
                                 Console.WriteLine("Azure responded by moving to: " + response.Move);
                                 Console.WriteLine();
-                            } else
+                            }
+
+                            // Check for winner:
+                            if(response.Winner != null && !string.Equals(response.Winner, "inconclusive"))
                             {
-                                // Check for winner:
-                                if(response.Winner != null && !string.Equals(response.Winner, "inconclusive"))
+                                Console.WriteLine("You are " + playerSymbol);
+                                DisplayBoard(board);
+                                if (string.Equals(response.Winner, playerSymbol))
                                 {
-                                    if(string.Equals(response.Winner, playerSymbol))
-                                    {
-                                        Console.WriteLine("You win! Congratulations!");
-                                    }
-                                    else if (string.Equals(response.Winner, azureSymbol))
-                                    {
-
-                                        Console.WriteLine("Azure wins! Better luck next time!");
-                                    }
-                                    else if (string.Equals(response.Winner, "tie"))
-                                    {
-                                        Console.WriteLine("It's a tie! (this is a tough AI)");
-                                    }
-
-                                    Console.WriteLine("(press any button to reset)");
-                                    Console.ReadLine();
-                                    Console.Clear();
-                                    board = GetNewBoard();
-                                    ResetPlayerSymbols();
+                                    Console.WriteLine("You win! Congratulations!");
                                 }
+                                else if (string.Equals(response.Winner, azureSymbol))
+                                {
+
+                                    Console.WriteLine("Azure wins! Better luck next time!");
+                                }
+                                else if (string.Equals(response.Winner, "tie"))
+                                {
+                                    Console.WriteLine("It's a tie! (this is a tough AI)");
+                                }
+
+                                Console.WriteLine("(press any button to reset)");
+                                Console.ReadLine();
+                                Console.Clear();
+                                board = GetNewBoard();
+                                ResetPlayerSymbols();
                             }
                         }
                     } else

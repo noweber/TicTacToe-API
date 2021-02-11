@@ -102,8 +102,31 @@ namespace TicTacToe.Controllers
             }
             else
             {
+                // Need to determine which player moved first else the Minimax tree search might expect Azure can move twice in a row (which it can't):
+                // This would happen if Azure was behind by 1 move, makes a hypothtetical move in its search tree, and then the method to get next player can't tell.
+                // Determining which player moved first sets the tie breaker correctly when both players have equal number of turns on Minimax tree node board.
+                // This can be done correctly right here because we know it is Azure's turn and what their symbol is.
+                string firstMovingPlayer = moveRequest.azurePlayerSymbol;
+                int xCount = 0;
+                int oCount = 0;
+                for (int i = 0; i < moveRequest.gameBoard.Length; i++)
+                {
+                    if (string.Equals(moveRequest.gameBoard[i], "X"))
+                    {
+                        xCount += 1;
+                    }
+                    else if (string.Equals(moveRequest.gameBoard[i], "O"))
+                    {
+                        oCount += 1;
+                    }
+                }
+                if (xCount != oCount)
+                {
+                    firstMovingPlayer = moveRequest.humanPlayerSymbol;
+                }
+
                 // Select a move to make:
-                int nextMove = SearchBestMoveViaMinimax(moveRequest.gameBoard, moveRequest.azurePlayerSymbol);
+                int nextMove = SearchBestMoveViaMinimax(moveRequest.gameBoard, firstMovingPlayer);
 
                 // Check if this move results in a win:
                 string[] boardAfterMove = MakeMove(moveRequest.gameBoard, nextMove, moveRequest.azurePlayerSymbol);
@@ -176,8 +199,7 @@ namespace TicTacToe.Controllers
         private static string[] MakeMove(string[] board, int move, string player)
         {
             // Copy the input board to a new array:
-            string[] updatedBoard = new string[board.Length];
-            board.CopyTo(updatedBoard, 0);
+            string[] updatedBoard = new List<string>(board).ToArray();
 
             // Apply the move at the given location for the given player:
             updatedBoard[move] = player;
@@ -251,14 +273,13 @@ namespace TicTacToe.Controllers
                 if ((string.Equals("X", currentPlayer) && result.Item1 > bestMove.Item1) ||
                     (string.Equals("O", currentPlayer) && result.Item1 < bestMove.Item1))
                 {
-
                     bestMove = new Tuple<int, int?>(result.Item1, possibleMoves[i]);
                 }
                 else if (result.Item1 == bestMove.Item1)
                 {
                     // When the utility is tied, randomly decide if the new move should become the best move (since it doesn't matter which move is selected):
                     Random randomNumberGenerator = new Random();
-                    if (randomNumberGenerator.NextDouble() < (1.0f / (float)possibleMoves.Count))
+                    if (randomNumberGenerator.NextDouble() < 0.35f)
                     {
                         bestMove = new Tuple<int, int?>(result.Item1, possibleMoves[i]);
                     }
@@ -290,7 +311,7 @@ namespace TicTacToe.Controllers
         private static string NextPlayer(string[] board, string tieBreakerSymbol)
         {
             int xCount = 0;
-            int OCount = 0;
+            int oCount = 0;
             for (int i = 0; i < board.Length; i++)
             {
                 if (string.Equals(board[i], "X"))
@@ -299,15 +320,15 @@ namespace TicTacToe.Controllers
                 }
                 else if (string.Equals(board[i], "O"))
                 {
-                    OCount += 1;
+                    oCount += 1;
                 }
             }
 
-            if (xCount > OCount)
+            if (xCount > oCount)
             {
                 return "O";
             }
-            else if (OCount > xCount)
+            else if (oCount > xCount)
             {
                 return "X";
             }
