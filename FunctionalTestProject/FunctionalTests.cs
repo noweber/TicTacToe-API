@@ -705,7 +705,7 @@ namespace FunctionalTestProject
         /// <summary>
         /// This is a helper function used by all of the functional tests to instnatiate the REST client object.
         /// </summary>
-        /// <returns>TODO</returns>
+        /// <returns>Returns the client SDK for accessing the REST API.</returns>
         private RestClientSdkLibraryClient GetRestSdkClient()
         {
             ServiceClientCredentials serviceClientCredentials = new TokenCredentials("FakeTokenValue");
