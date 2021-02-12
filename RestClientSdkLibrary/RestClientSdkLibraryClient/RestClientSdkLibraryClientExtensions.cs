@@ -17,27 +17,77 @@ namespace RestClientSdkLibrary
     /// </summary>
     public static partial class RestClientSdkLibraryClientExtensions
     {
+            /// <summary>
+            /// Caclulates the best move given the input Tic Tac Toe board state and
+            /// player symbol and responds with said move plus any winner data.
+            /// </summary>
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
             /// <param name='body'>
+            /// The CalculateMoveRequest representing current state for which a move
+            /// should be calculated.
             /// </param>
-            public static object Post(this IRestClientSdkLibraryClient operations, ExecuteMoveRequest body = default(ExecuteMoveRequest))
+            public static object PostCalculateMove(this IRestClientSdkLibraryClient operations, CalculateMoveRequest body = default(CalculateMoveRequest))
             {
-                return Task.Factory.StartNew(s => ((IRestClientSdkLibraryClient)s).PostAsync(body), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+                return Task.Factory.StartNew(s => ((IRestClientSdkLibraryClient)s).PostCalculateMoveAsync(body), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
             }
 
+            /// <summary>
+            /// Caclulates the best move given the input Tic Tac Toe board state and
+            /// player symbol and responds with said move plus any winner data.
+            /// </summary>
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
             /// <param name='body'>
+            /// The CalculateMoveRequest representing current state for which a move
+            /// should be calculated.
             /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<object> PostAsync(this IRestClientSdkLibraryClient operations, ExecuteMoveRequest body = default(ExecuteMoveRequest), CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<object> PostCalculateMoveAsync(this IRestClientSdkLibraryClient operations, CalculateMoveRequest body = default(CalculateMoveRequest), CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.PostWithHttpMessagesAsync(body, null, cancellationToken).ConfigureAwait(false))
+                using (var _result = await operations.PostCalculateMoveWithHttpMessagesAsync(body, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
+            }
+
+            /// <summary>
+            /// Executes the Tic Tac Toe move provided in the request body and determines
+            /// the next move by Azure AI if the game is not over.
+            /// </summary>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='body'>
+            /// The ExecuteMoveRequest representing the last move made within the game.
+            /// Azure will act upon this move, if valid, and return the result.
+            /// </param>
+            public static object PostExecuteMove(this IRestClientSdkLibraryClient operations, ExecuteMoveRequest body = default(ExecuteMoveRequest))
+            {
+                return Task.Factory.StartNew(s => ((IRestClientSdkLibraryClient)s).PostExecuteMoveAsync(body), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+            }
+
+            /// <summary>
+            /// Executes the Tic Tac Toe move provided in the request body and determines
+            /// the next move by Azure AI if the game is not over.
+            /// </summary>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='body'>
+            /// The ExecuteMoveRequest representing the last move made within the game.
+            /// Azure will act upon this move, if valid, and return the result.
+            /// </param>
+            /// <param name='cancellationToken'>
+            /// The cancellation token.
+            /// </param>
+            public static async Task<object> PostExecuteMoveAsync(this IRestClientSdkLibraryClient operations, ExecuteMoveRequest body = default(ExecuteMoveRequest), CancellationToken cancellationToken = default(CancellationToken))
+            {
+                using (var _result = await operations.PostExecuteMoveWithHttpMessagesAsync(body, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }

@@ -11,6 +11,11 @@ namespace RestClientSdkLibrary.Models
     using Microsoft.Rest;
     using Microsoft.Rest.Serialization;
 
+    /// <summary>
+    /// Represents the last move data made by an actor within the Tic Tac Toe
+    /// game from which the AI can update the game state and respond with its
+    /// next move.
+    /// </summary>
     public partial class ExecuteMoveRequest
     {
         /// <summary>
@@ -30,21 +35,33 @@ namespace RestClientSdkLibrary.Models
         }
 
         /// <summary>
+        /// Indicates the position on the board the last actor to update state
+        /// chooses.
+        /// This is a Nullable type because, if it were not, the value would
+        /// default to 0 if it was not present in the request body.
+        /// The move field is not required if and only if the game board is
+        /// empty (contains only ? symbols)
         /// </summary>
         [JsonProperty(PropertyName = "move")]
         public int? Move { get; set; }
 
         /// <summary>
+        /// The letter X or the letter O indicating the symbol used by Azure.
         /// </summary>
         [JsonProperty(PropertyName = "azurePlayerSymbol")]
         public string AzurePlayerSymbol { get; set; }
 
         /// <summary>
+        /// The letter X or the letter O indicating the symbol used by the
+        /// human.
         /// </summary>
         [JsonProperty(PropertyName = "humanPlayerSymbol")]
         public string HumanPlayerSymbol { get; set; }
 
         /// <summary>
+        /// An array of X, O, and ? symbols representing the current state of
+        /// the game board where ? is an open space and the other symbols
+        /// correspond to players.
         /// </summary>
         [JsonProperty(PropertyName = "gameBoard")]
         public IList<string> GameBoard { get; set; }

@@ -12,29 +12,42 @@ namespace RestClientSdkLibrary.Models
     using Microsoft.Rest.Serialization;
 
     /// <summary>
-    /// Additional data along which, along with the parent class representing
-    /// the Azure AI's move, contains the current state of the game whether
-    /// there is a winner or not, yet.
+    /// Represents the response based on the Azure AI's calculations of what
+    /// the best move to make for a given player is given the input data in
+    /// the request.
     /// </summary>
-    public partial class ExecuteMoveResponse
+    public partial class CalculateMoveResponse
     {
         /// <summary>
-        /// Initializes a new instance of the ExecuteMoveResponse class.
+        /// Initializes a new instance of the CalculateMoveResponse class.
         /// </summary>
-        public ExecuteMoveResponse() { }
+        public CalculateMoveResponse() { }
 
         /// <summary>
-        /// Initializes a new instance of the ExecuteMoveResponse class.
+        /// Initializes a new instance of the CalculateMoveResponse class.
         /// </summary>
-        public ExecuteMoveResponse(string azurePlayerSymbol, string humanPlayerSymbol, IList<string> gameBoard, int? move = default(int?), string winner = default(string), IList<int?> winPositions = default(IList<int?>))
+        public CalculateMoveResponse(string playerSymbol, IList<string> gameBoard, int? move = default(int?), string winner = default(string), IList<int?> winPositions = default(IList<int?>))
         {
-            Move = move;
-            AzurePlayerSymbol = azurePlayerSymbol;
-            HumanPlayerSymbol = humanPlayerSymbol;
+            PlayerSymbol = playerSymbol;
             GameBoard = gameBoard;
+            Move = move;
             Winner = winner;
             WinPositions = winPositions;
         }
+
+        /// <summary>
+        /// The symbol of the player to calculate a move for.
+        /// </summary>
+        [JsonProperty(PropertyName = "playerSymbol")]
+        public string PlayerSymbol { get; set; }
+
+        /// <summary>
+        /// An array of X, O, and ? symbols representing the current state of
+        /// the game board where ? is an open space and the other symbols
+        /// correspond to players.
+        /// </summary>
+        [JsonProperty(PropertyName = "gameBoard")]
+        public IList<string> GameBoard { get; set; }
 
         /// <summary>
         /// Indicates the position on the board the last actor to update state
@@ -46,27 +59,6 @@ namespace RestClientSdkLibrary.Models
         /// </summary>
         [JsonProperty(PropertyName = "move")]
         public int? Move { get; set; }
-
-        /// <summary>
-        /// The letter X or the letter O indicating the symbol used by Azure.
-        /// </summary>
-        [JsonProperty(PropertyName = "azurePlayerSymbol")]
-        public string AzurePlayerSymbol { get; set; }
-
-        /// <summary>
-        /// The letter X or the letter O indicating the symbol used by the
-        /// human.
-        /// </summary>
-        [JsonProperty(PropertyName = "humanPlayerSymbol")]
-        public string HumanPlayerSymbol { get; set; }
-
-        /// <summary>
-        /// An array of X, O, and ? symbols representing the current state of
-        /// the game board where ? is an open space and the other symbols
-        /// correspond to players.
-        /// </summary>
-        [JsonProperty(PropertyName = "gameBoard")]
-        public IList<string> GameBoard { get; set; }
 
         /// <summary>
         /// Indicates the gameboard status whether there is a winner (the
@@ -88,54 +80,27 @@ namespace RestClientSdkLibrary.Models
         /// </summary>
         public virtual void Validate()
         {
-            if (AzurePlayerSymbol == null)
+            if (PlayerSymbol == null)
             {
-                throw new ValidationException(ValidationRules.CannotBeNull, "AzurePlayerSymbol");
-            }
-            if (HumanPlayerSymbol == null)
-            {
-                throw new ValidationException(ValidationRules.CannotBeNull, "HumanPlayerSymbol");
+                throw new ValidationException(ValidationRules.CannotBeNull, "PlayerSymbol");
             }
             if (GameBoard == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "GameBoard");
             }
-            if (this.Move > 8)
+            if (this.PlayerSymbol != null)
             {
-                throw new ValidationException(ValidationRules.InclusiveMaximum, "Move", 8);
-            }
-            if (this.Move < 0)
-            {
-                throw new ValidationException(ValidationRules.InclusiveMinimum, "Move", 0);
-            }
-            if (this.AzurePlayerSymbol != null)
-            {
-                if (this.AzurePlayerSymbol.Length > 1)
+                if (this.PlayerSymbol.Length > 1)
                 {
-                    throw new ValidationException(ValidationRules.MaxLength, "AzurePlayerSymbol", 1);
+                    throw new ValidationException(ValidationRules.MaxLength, "PlayerSymbol", 1);
                 }
-                if (this.AzurePlayerSymbol.Length < 0)
+                if (this.PlayerSymbol.Length < 0)
                 {
-                    throw new ValidationException(ValidationRules.MinLength, "AzurePlayerSymbol", 0);
+                    throw new ValidationException(ValidationRules.MinLength, "PlayerSymbol", 0);
                 }
-                if (!System.Text.RegularExpressions.Regex.IsMatch(this.AzurePlayerSymbol, "X|O"))
+                if (!System.Text.RegularExpressions.Regex.IsMatch(this.PlayerSymbol, "X|O"))
                 {
-                    throw new ValidationException(ValidationRules.Pattern, "AzurePlayerSymbol", "X|O");
-                }
-            }
-            if (this.HumanPlayerSymbol != null)
-            {
-                if (this.HumanPlayerSymbol.Length > 1)
-                {
-                    throw new ValidationException(ValidationRules.MaxLength, "HumanPlayerSymbol", 1);
-                }
-                if (this.HumanPlayerSymbol.Length < 0)
-                {
-                    throw new ValidationException(ValidationRules.MinLength, "HumanPlayerSymbol", 0);
-                }
-                if (!System.Text.RegularExpressions.Regex.IsMatch(this.HumanPlayerSymbol, "X|O"))
-                {
-                    throw new ValidationException(ValidationRules.Pattern, "HumanPlayerSymbol", "X|O");
+                    throw new ValidationException(ValidationRules.Pattern, "PlayerSymbol", "X|O");
                 }
             }
             if (this.GameBoard != null)
@@ -148,6 +113,14 @@ namespace RestClientSdkLibrary.Models
                 {
                     throw new ValidationException(ValidationRules.MinItems, "GameBoard", 9);
                 }
+            }
+            if (this.Move > 8)
+            {
+                throw new ValidationException(ValidationRules.InclusiveMaximum, "Move", 8);
+            }
+            if (this.Move < 0)
+            {
+                throw new ValidationException(ValidationRules.InclusiveMinimum, "Move", 0);
             }
             if (this.Winner != null)
             {

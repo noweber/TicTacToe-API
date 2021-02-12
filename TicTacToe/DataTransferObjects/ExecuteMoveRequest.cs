@@ -3,7 +3,7 @@
 namespace TicTacToe.DataTransferObjects
 {
     /// <summary>
-    /// Represents the last move data made by an actor (human player or Azure AI player) within the Tic Tac Toe game and the updated board.
+    /// Represents the last move data made by an actor within the Tic Tac Toe game from which the AI can update the game state and respond with its next move.
     /// </summary>
     public class ExecuteMoveRequest
     {
@@ -12,11 +12,6 @@ namespace TicTacToe.DataTransferObjects
         /// This is a Nullable type because, if it were not, the value would default to 0 if it was not present in the request body.
         /// The move field is not required if and only if the game board is empty (contains only ? symbols)
         /// </summary>
-        /// <value>
-        /// Indicates the position on the board the last actor to update state chooses.
-        /// This is a Nullable type because, if it were not, the value would default to 0 if it was not present in the request body.
-        /// The move field is not required if and only if the game board is empty (contains only ? symbols)
-        /// </value> 
         [Range(0, 8)]
         public System.Nullable<int> move { get; set; }
 

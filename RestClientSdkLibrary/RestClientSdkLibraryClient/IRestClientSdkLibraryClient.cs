@@ -39,7 +39,14 @@ namespace RestClientSdkLibrary
         ServiceClientCredentials Credentials { get; }
 
 
-            /// <param name='body'>
+            /// <summary>
+        /// Caclulates the best move given the input Tic Tac Toe board state
+        /// and player symbol and responds with said move plus any winner
+        /// data.
+        /// </summary>
+        /// <param name='body'>
+        /// The CalculateMoveRequest representing current state for which a
+        /// move should be calculated.
         /// </param>
         /// <param name='customHeaders'>
         /// The headers that will be added to request.
@@ -47,7 +54,24 @@ namespace RestClientSdkLibrary
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<object>> PostWithHttpMessagesAsync(ExecuteMoveRequest body = default(ExecuteMoveRequest), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<object>> PostCalculateMoveWithHttpMessagesAsync(CalculateMoveRequest body = default(CalculateMoveRequest), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Executes the Tic Tac Toe move provided in the request body and
+        /// determines the next move by Azure AI if the game is not over.
+        /// </summary>
+        /// <param name='body'>
+        /// The ExecuteMoveRequest representing the last move made within the
+        /// game. Azure will act upon this move, if valid, and return the
+        /// result.
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<object>> PostExecuteMoveWithHttpMessagesAsync(ExecuteMoveRequest body = default(ExecuteMoveRequest), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
     }
 }

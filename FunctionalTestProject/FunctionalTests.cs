@@ -55,7 +55,7 @@ namespace FunctionalTestProject
             ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(O, X, GameBoard, 2);
 
             // Act
-            ExecuteMoveResponse results = (ExecuteMoveResponse)client.Post(moveRequest);
+            ExecuteMoveResponse results = (ExecuteMoveResponse)client.PostExecuteMove(moveRequest);
 
             // Assert the response is not null (since this object will be used in subsequent assertions):
             Assert.IsNotNull(results);
@@ -104,7 +104,7 @@ namespace FunctionalTestProject
             ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(X, O, GameBoard, 2);
 
             // Act
-            ExecuteMoveResponse results = (ExecuteMoveResponse)client.Post(moveRequest);
+            ExecuteMoveResponse results = (ExecuteMoveResponse)client.PostExecuteMove(moveRequest);
 
             // Assert the response is not null (since this object will be used in subsequent assertions):
             Assert.IsNotNull(results);
@@ -151,7 +151,7 @@ namespace FunctionalTestProject
             ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(X, O, GameBoard, 4);
 
             // Act
-            ExecuteMoveResponse results = (ExecuteMoveResponse)client.Post(moveRequest);
+            ExecuteMoveResponse results = (ExecuteMoveResponse)client.PostExecuteMove(moveRequest);
 
             // Assert the response is not null (since this object will be used in subsequent assertions):
             Assert.IsNotNull(results);
@@ -199,7 +199,7 @@ namespace FunctionalTestProject
             ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(X, O, GameBoard);
 
             // Act
-            ExecuteMoveResponse results = (ExecuteMoveResponse)client.Post(moveRequest);
+            ExecuteMoveResponse results = (ExecuteMoveResponse)client.PostExecuteMove(moveRequest);
 
             // Assert the response is not null (since this object will be used in subsequent assertions):
             Assert.IsNotNull(results);
@@ -248,7 +248,7 @@ namespace FunctionalTestProject
             ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(X, O, GameBoard, 1);
 
             // Act
-            ExecuteMoveResponse results = (ExecuteMoveResponse)client.Post(moveRequest);
+            ExecuteMoveResponse results = (ExecuteMoveResponse)client.PostExecuteMove(moveRequest);
 
             // Assert the response is not null (since this object will be used in subsequent assertions):
             Assert.IsNotNull(results);
@@ -288,7 +288,7 @@ namespace FunctionalTestProject
             ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(X, X, GameBoard);
 
             // Act
-            string results = (string)client.Post(moveRequest);
+            string results = (string)client.PostExecuteMove(moveRequest);
 
             // Assert the response object is not null to prove it was a BadRequest:
             Assert.IsNotNull(results);
@@ -316,7 +316,7 @@ namespace FunctionalTestProject
             ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(O, O, GameBoard, 1);
 
             // Act
-            string results = (string)client.Post(moveRequest);
+            string results = (string)client.PostExecuteMove(moveRequest);
 
             // Assert the response object is not null to prove it was a BadRequest:
             Assert.IsNotNull(results);
@@ -346,7 +346,7 @@ namespace FunctionalTestProject
             ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(X, "Y", GameBoard);
 
             // Act
-            string response = (string)client.Post(moveRequest);
+            string response = (string)client.PostExecuteMove(moveRequest);
 
             // Assert the response object is not null to prove it was a BadRequest:
             Assert.IsNotNull(response);
@@ -374,7 +374,7 @@ namespace FunctionalTestProject
             ExecuteMoveRequest moveRequest = new ExecuteMoveRequest("Y", X, GameBoard);
 
             // Act
-            string response = (string)client.Post(moveRequest);
+            string response = (string)client.PostExecuteMove(moveRequest);
 
             // Assert the response object is not null to prove it was a BadRequest:
             Assert.IsNotNull(response);
@@ -400,7 +400,7 @@ namespace FunctionalTestProject
             ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(X, O, GameBoard, 4);
 
             // Act
-            string response = (string)client.Post(moveRequest);
+            string response = (string)client.PostExecuteMove(moveRequest);
 
             // Assert the response object is not null to prove it was a BadRequest:
             Assert.IsNotNull(response);
@@ -426,7 +426,7 @@ namespace FunctionalTestProject
             ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(O, X, GameBoard, 4);
 
             // Act
-            string response = (string)client.Post(moveRequest);
+            string response = (string)client.PostExecuteMove(moveRequest);
 
             // Assert the response object is not null to prove it was a BadRequest:
             Assert.IsNotNull(response);
@@ -451,7 +451,7 @@ namespace FunctionalTestProject
             ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(O, X, GameBoard);
 
             // Act
-            string response = (string)client.Post(moveRequest);
+            string response = (string)client.PostExecuteMove(moveRequest);
 
             // Assert the response object is not null to prove it was a BadRequest:
             Assert.IsNotNull(response);
@@ -478,7 +478,7 @@ namespace FunctionalTestProject
             ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(O, X, GameBoard);
 
             // Act
-            string response = (string)client.Post(moveRequest);
+            string response = (string)client.PostExecuteMove(moveRequest);
 
             // Assert the response object is not null to prove it was a BadRequest:
             Assert.IsNotNull(response);
@@ -506,7 +506,7 @@ namespace FunctionalTestProject
             ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(O, X, GameBoard, 3);
 
             // Act
-            string response = (string)client.Post(moveRequest);
+            string response = (string)client.PostExecuteMove(moveRequest);
 
             // Assert the response object is not null to prove it was a BadRequest:
             Assert.IsNotNull(response);
@@ -534,7 +534,7 @@ namespace FunctionalTestProject
             ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(X, O, GameBoard, 3);
 
             // Act
-            string response = (string)client.Post(moveRequest);
+            string response = (string)client.PostExecuteMove(moveRequest);
 
             // Assert the response object is not null to prove it was a BadRequest:
             Assert.IsNotNull(response);
@@ -562,7 +562,7 @@ namespace FunctionalTestProject
             ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(X, O, GameBoard);
 
             // Act
-            string response = (string)client.Post(moveRequest);
+            string response = (string)client.PostExecuteMove(moveRequest);
 
             // Assert the response object is not null to prove it was a BadRequest:
             Assert.IsNotNull(response);
@@ -590,7 +590,7 @@ namespace FunctionalTestProject
             ExecuteMoveRequest moveRequest = new ExecuteMoveRequest(X, O, GameBoard, 4);
 
             // Act
-            string response = (string)client.Post(moveRequest);
+            string response = (string)client.PostExecuteMove(moveRequest);
 
             // Assert the response object is not null to prove it was a BadRequest:
             Assert.IsNotNull(response);
