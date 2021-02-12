@@ -692,8 +692,11 @@ namespace FunctionalTestProject
                         gameIsOver = true;
 
                         // Assert the win positions are present when there is a winner:
-                        Assert.IsNotNull(response.WinPositions);
-                        Assert.AreEqual(3, response.WinPositions.Count);
+                        if(!string.Equals("tie", response.Winner))
+                        {
+                            Assert.IsNotNull(response.WinPositions);
+                            Assert.AreEqual(3, response.WinPositions.Count);
+                        }
                     }
                 }
             }
