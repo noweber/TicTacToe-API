@@ -2,8 +2,13 @@ CSCI E-94 Homework Assignment #1
 Nicholas Owen Weber
 noweber@gmail.com / niw206@g.harvard.edu
 
+Summary:
+- I created the required web app and functional tests and have fulfilled all requirements. A detailed requirements traceability is below.
+- I have also fulfilled both of the extra credit requirements by creating a console client in the 'ConsoleClient' project and by adding the CalculateMove functionality (with corresponding functional test).
+- Please be advised that there is a URL in the functional test file as well as the console client file and point your requests at a local/Azure instance as desired.
+- I created a non-optimized (no alpha-beta pruning) Minimax AI to play the game on the server side.
 
-Notes for Instructors:
+Setup Notes for Instructors:
 - The solution is contained within a directory named 'TicTacToe'.
 - This directory was created by Visual Studio and its default structure has been preserved.
 - Within the 'TicTacToe' directory, please find the solution file 'TicTacToe.sln'.
@@ -239,16 +244,19 @@ You may implement both extra credit items or a single extra credit item, but any
         - I've implemented a console client app to play against the Minimax AI.
         - Please select the 'ConsoleClient' project at the top of Visual Studio 2019 and select 'Start Debugging' to play.
         - The UI is very simple: enter the cell you want to place a move at and then press enter.
-        - Please ensure you have the app running locally or are pointed to the Azure instance.
+        - Please ensure you have the TicTacToe web app running locally or are pointed to the Azure instance.
         - Please be aware that the Azure App Service is "Free" tier, so if you play too much it will stop responding because it has limited CPU time in this tier.
 
     2.	Create the functionality that allows Azure to play against itself and implement the play against itself via MS Test
+        - This functionality was added as a POST action in the controller file "CalculateMoveController.cs"
+        - The route is "/calculatemove".
         a.	Add a new rest interface called calculatemove that shall return the move based on the game board presented and update the board with the move made.
             i.	It shall accept the following input
                 1.	{
                         "playerSymbol": "X",
                         "gameBoard":["O","X","O","?","X","O","?","?","?"]
                     }
+                - This model can be found in the "CalculateMoveRequest.cs" file of the 'DataTransferObjects' directory in the TicTacToe web app project. 
             ii.	It shall return the following output
                 1.	{
                         "move": 7,
@@ -257,15 +265,35 @@ You may implement both extra credit items or a single extra credit item, but any
                         "winPositions": [1,4,7],
                         "gameBoard":["O","X","O","?","X","O","?","X","?"]
                     }
+                - This model can be found in the "CalculateMoveResponse.cs" file of the 'DataTransferObjects' directory in the TicTacToe web app project. 
             iii.	move property 
-                1.	Indicates the position the Azure App Service calculated for the playerSymbol provided. In the above example, the Azure App Service choose position 7 on the game board. 
+                1.	Indicates the position the Azure App Service calculated for the playerSymbol provided. In the above example, the Azure App Service choose position 7 on the game board.
+                    - This model can be found in the "CalculateMoveResponse.cs" file of the 'DataTransferObjects' directory in the TicTacToe web app project. 
+                    - This field is used to update board state within the functional test: FunctionalTests::TestPostCalculateMoveCanPlayTicTacToeAgainstItself().
                 2.	The computation of the move shall include some randomness such that if the move is the first move, the move shall be different from the last first move. Use .NET random functions to attempt to be different from one game to another. Randomness does not have to be perfect meaning sometimes a new game may result in the same first move as the previous game.
+                    - .NET's random number generation was used within the Minimax search tree:
+                        - Each possible board state is evaluated and given a utility value.
+                        - In a Minimax tree, it searches the tree considering its opponents best moves.
+                        - Board states are assigned a utiltiy value of 1 if X wins, -1 if O wins, else a 0;
+                        - Depending on the player who is searching for their optimal move, they will want to maximize/minimize the utility.
+                        - Since X does not care how it wins, for example, it only cares that it moves towards a board state of 1, then it doesn't different between multiple winning moves.
+                        - For its initial move, there are many possible locations which it can win from just as there are from other states.
+                        - When two states have equal utility (very common) then X, or O if they were the player searching, can win from any of them.
+                        - This occurs frequently and there is a ~35% chance it selects a new move over its initial winning when it discovers one (since it searches all possible outcomes).
+                        - Roughly, this means that if there are 3 corners it could move to and win no matter what the other player does, it is about as likely to select any of them.
+                        - Please see the implementation for this within the file "GameHelper.cs" specifically in the functions SearchBestMoveViaMinimax() whichs calls the recursive search functions GetBestMove().
                 3.	If a tie or winner occurred because of the game state provided, then the move property shall be set to null
+                    - The board sent in the request is checked to see if there is a winner within "CalculateMoveController.cs".
+                    - When a winner is found in the board provided, the winner symbol and positions are sent back with no move made.
                     a.	If a winner is not present, then the move property shall contain the Azure computed move, and the winner property shall contain the resulting state after the move is applied.
+                        - The computed move is used at every iteration of the while loop to update the board within FunctionalTests::TestPostCalculateMoveCanPlayTicTacToeAgainstItself().
+                        - There are assertions to check that the win positions are returns within FunctionalTests::TestPostCalculateMoveCanPlayTicTacToeAgainstItself().
             iv.	playerSymbol property
                 1.	Is the same symbol value the input payload specified in the playerSymbol originally sent.
+                    - There is an assertion within the loop to test this within FunctionalTests::TestPostCalculateMoveCanPlayTicTacToeAgainstItself().
             v.	winner property
                 1.	Indicates if there is a winner, tie, or no winner or tie yet and the game can continue
+                    - There is an assertion to show this value must match one of the four below within FunctionalTests::TestPostCalculateMoveCanPlayTicTacToeAgainstItself().
                     a.	inconclusive
                         i.	Indicates there are still open places and there is no winner
                     b.	tie
@@ -276,11 +304,19 @@ You may implement both extra credit items or a single extra credit item, but any
                         i.	Indicates player O is the winner
             vi.	winPositions property
                 1.	An array that lists the position index values of the win or null if no win is present in the gameBoard array
+                    - There is an assertion to check for this within FunctionalTests::TestPostCalculateMoveCanPlayTicTacToeAgainstItself().
             vii.	gameBoard property
                 1.	An array containing all the positions on the board and the mark that is in the position including the mark azure made if Azure made a move
+                    - There is an assertion to check that the game board only contains the three values below within FunctionalTests::TestPostCalculateMoveCanPlayTicTacToeAgainstItself().
                     a.	? = An empty space on the game board
                     b.	X = Player X has a piece on that game board location
                     c.	O = Player O has a piece on that game board location
         b.	Create an MS Test that uses this new calculatemove rest interface to play azure against itself
             i.	Log the results to the debug window in Visual Studio
+                - The following functional tests fulfills all of the above requirements:
+                    - FunctionalTests::TestPostCalculateMoveCanPlayTicTacToeAgainstItself().
+                - The output of the test is logged used Debug.Write() and Debug.Writeline().
+                    - The output can be viewed from the test runner window (among other ways) by running the test and then clicking on the 'Open additional output for this result' link in from the 'Test Detail Summary' view.
+                        - Note that the additional output needs to be re-opened between test runs and it does not update automatically within Visual Studio 2019.
+                        - When viewing the output, you can also see the randomness of the AI's cell selection while still moving optimally.
 

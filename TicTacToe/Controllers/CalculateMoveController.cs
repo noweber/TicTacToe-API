@@ -56,11 +56,17 @@ namespace TicTacToe.Controllers
                 return BadRequest("The game board contains an illegal move. There must be an equal number of X and O moves within the board +/- 1 for the most recent move.");
             }
 
-            // Check if the board state already has a winner, and, if so, return bad request since there is no move to be made and the client should have already known the winner data:
+            // Check if the board state already has a winner, and, if so, the response with move set to null:
             Tuple<string, int[]> winner = GameHelper.GetWinner(moveRequest.gameBoard);
             if (!string.Equals(winner.Item1, GameHelper.InconclusiveState))
             {
-                return BadRequest("The board and player sent for a move to be calculated were already in a terminal board state.");
+                return new ObjectResult(new CalculateMoveResponse()
+                {
+                    playerSymbol = moveRequest.playerSymbol,
+                    gameBoard = moveRequest.gameBoard,
+                    winner = winner.Item1,
+                    winPositions = winner.Item2
+                });
             }
 
             // Check which player moved first since, during the minimax search, that symbol will be returned as the next player if a board is evaluated with equal Xs and Os.

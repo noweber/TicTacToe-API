@@ -650,6 +650,13 @@ namespace FunctionalTestProject
                 CalculateMoveResponse response = (CalculateMoveResponse)client.PostCalculateMove(moveRequest);
                 Debug.Write("Response: ");
                 Debug.WriteLine(JsonSerializer.Serialize(response));
+                Assert.AreEqual(playerSymbol, response.PlayerSymbol);
+
+                // Assert that every cell of the response board is valid:
+                for(int i = 0; i < response.GameBoard.Count; i++)
+                {
+                    Assert.IsTrue(string.Equals("X", response.GameBoard[i]) || string.Equals("O", response.GameBoard[i]) || string.Equals("?", response.GameBoard[i]));
+                }
 
                 // Update and display the local board state:
                 if(response.Move != null)
@@ -674,10 +681,20 @@ namespace FunctionalTestProject
                 }
 
                 // Check for a winner:
-                if(response.Winner != null && !string.Equals("inconclusive", response.Winner))
+                if(response.Winner != null)
                 {
-                    Debug.WriteLine("The winner is: " + response.Winner);
-                    gameIsOver = true;
+                    // Assert that the winner field value is valid:
+                    Assert.IsTrue(string.Equals("X", response.Winner) || string.Equals("O", response.Winner) || string.Equals("tie", response.Winner) || string.Equals("inconclusive", response.Winner));
+
+                    if (!string.Equals("inconclusive", response.Winner))
+                    {
+                        Debug.WriteLine("The winner is: " + response.Winner);
+                        gameIsOver = true;
+
+                        // Assert the win positions are present when there is a winner:
+                        Assert.IsNotNull(response.WinPositions);
+                        Assert.AreEqual(3, response.WinPositions.Count);
+                    }
                 }
             }
         }
