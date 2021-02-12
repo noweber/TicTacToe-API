@@ -12,8 +12,8 @@ namespace ConsoleClient
     {
         // The URL string for local or Azure endpoints.
         // Comment/uncomment each depending on which you would like to use for playing.
-        const string EndpointUrlString = "http://localhost:2932/";
-        //const string EndpointUrlString = "https://csci-e94-assignment-1-nicholas-weber.azurewebsites.net";
+        //const string EndpointUrlString = "http://localhost:2932/";
+        const string EndpointUrlString = "https://csci-e94-assignment-1-nicholas-weber.azurewebsites.net";
         static RestClientSdkLibraryClient client = new RestClientSdkLibraryClient(new Uri(EndpointUrlString), new TokenCredentials("FakeTokenValue"));
         static Random randomNumberGenerator = new Random();
         const int NumberOfColumns = 3;

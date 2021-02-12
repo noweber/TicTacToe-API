@@ -4,6 +4,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RestClientSdkLibrary;
 using RestClientSdkLibrary.Models;
 using System;
+using System.Diagnostics;
+using System.Text.Json;
 
 namespace FunctionalTestProject
 {
@@ -600,6 +602,85 @@ namespace FunctionalTestProject
         }
 
         #endregion
+
+        /// <summary>
+        /// This is a functional test to assert a BadRequest is returned when Azure should not be the next player to move given how many moves each player has made -- human has fewer symbols on the board, but has also just moved.
+        /// </summary>
+        [TestMethod]
+        public void TestPostCalculateMoveCanPlayTicTacToeAgainstItself()
+        {
+            // Arrange an empty starting game board
+            string[] gameBoard = new string[]
+            {
+                _, _, _,
+                _, _, _,
+                _, _, _
+            };
+
+            // Arrange a random starting symbol for the player:
+            string playerSymbol = "X";
+            Random randomNumberGenerator = new Random();
+            if(randomNumberGenerator.NextDouble() < 0.5f)
+            {
+                playerSymbol = "O";
+            }
+
+            // Arrange a REST client object to send requests to the server:
+            RestClientSdkLibraryClient client = this.GetRestSdkClient();
+
+            // Act - loop until the game is over due to a winner or tie
+            bool gameIsOver = false;
+            while(!gameIsOver)
+            {
+                // Swap the player symbol so that the next player gets to make a turn:
+                if(string.Equals("X", playerSymbol))
+                {
+                    playerSymbol = "O";
+                } else
+                {
+                    playerSymbol = "X";
+                }
+
+                // Generate a request given current state for this player:
+                CalculateMoveRequest moveRequest = new CalculateMoveRequest(playerSymbol, gameBoard);
+                Debug.Write("Request: ");
+                Debug.WriteLine(JsonSerializer.Serialize(moveRequest));
+
+                // Send the calculate move request:
+                CalculateMoveResponse response = (CalculateMoveResponse)client.PostCalculateMove(moveRequest);
+                Debug.Write("Response: ");
+                Debug.WriteLine(JsonSerializer.Serialize(response));
+
+                // Update and display the local board state:
+                if(response.Move != null)
+                {
+                    gameBoard[response.Move.Value] = playerSymbol;
+                }
+                Debug.WriteLine("Board: ");
+                for (int i = 0; i < 3; i++)
+                {
+                    for (int j = 0; j < 3; j++)
+                    {
+                        if (string.Equals(gameBoard[i * 3 + j], "?"))
+                        {
+                            Debug.Write(i * 3 + j + " ");
+                        }
+                        else
+                        {
+                            Debug.Write(gameBoard[i * 3 + j] + " ");
+                        }
+                    }
+                    Debug.WriteLine(string.Empty);
+                }
+
+                // Check for a winner:
+                if(response.Winner != null && !string.Equals("inconclusive", response.Winner))
+                {
+                    Debug.WriteLine("The winner is: " + response.Winner);
+                    gameIsOver = true;
+                }
+            }
+        }
 
         /// <summary>
         /// This is a helper function used by all of the functional tests to instnatiate the REST client object.
